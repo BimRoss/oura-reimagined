@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <radialGradient id="bg" cx="70%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#EFE2D0"/>
+      <stop offset="55%" stop-color="#F2EBE0"/>
+      <stop offset="100%" stop-color="#E8DDCB"/>
+    </radialGradient>
+    <radialGradient id="ringOuter" cx="30%" cy="25%" r="80%">
+      <stop offset="0%" stop-color="#FAF6EE"/>
+      <stop offset="18%" stop-color="#C9B8A0"/>
+      <stop offset="45%" stop-color="#8A7960"/>
+      <stop offset="75%" stop-color="#4A3F33"/>
+      <stop offset="100%" stop-color="#1A1612"/>
+    </radialGradient>
+    <radialGradient id="ringInner" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#2A2018"/>
+      <stop offset="100%" stop-color="#0D0906"/>
+    </radialGradient>
+    <radialGradient id="sensor" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF9B5C"/>
+      <stop offset="40%" stop-color="#B8704A"/>
+      <stop offset="100%" stop-color="#4A2818"/>
+    </radialGradient>
+    <filter id="ringShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="22"/>
+      <feOffset dx="0" dy="40" result="offsetblur"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.4"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sensorGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+
+  <!-- top nav -->
+  <g font-size="13" fill="#161310" letter-spacing="2">
+    <text x="130" y="60" font-family="Fraunces, Georgia, serif" font-weight="300" font-size="22" letter-spacing="4">ŌURA</text>
+    <g opacity="0.78">
+      <text x="640" y="60">SHOP</text>
+      <text x="730" y="60">HEALTH</text>
+      <text x="840" y="60">EXPERIENCE</text>
+      <text x="990" y="60">RESEARCH</text>
+      <text x="1100" y="60">TEAMS</text>
+    </g>
+    <g>
+      <rect x="1390" y="38" width="86" height="32" rx="16" fill="none" stroke="#161310" stroke-opacity="0.4"/>
+      <text x="1414" y="59">BEGIN</text>
+    </g>
+  </g>
+
+  <!-- eyebrow -->
+  <g transform="translate(130, 260)">
+    <circle cx="6" cy="-5" r="5" fill="#B8704A"/>
+    <text x="22" y="0" font-size="13" letter-spacing="3" fill="#3A332B">ŌURA RING 4 — NOW IN TITANIUM</text>
+  </g>
+
+  <!-- headline -->
+  <g font-family="Fraunces, Georgia, serif" font-weight="300" fill="#161310" letter-spacing="-2.5">
+    <text x="130" y="400" font-size="78">Your body has been</text>
+    <text x="130" y="490" font-size="78">telling you <tspan font-style="italic" fill="#B8704A">everything.</tspan></text>
+    <text x="130" y="580" font-size="78">Ōura listens.</text>
+  </g>
+
+  <!-- subline -->
+  <text x="130" y="660" font-size="18" fill="#3A332B">
+    <tspan x="130" dy="0">A ring that disappears on your finger and reappears as clarity —</tspan>
+    <tspan x="130" dy="26">sleep, recovery, rhythm, longevity. 50+ signals, one soft voice.</tspan>
+  </text>
+
+  <!-- meta stats -->
+  <g transform="translate(130, 800)">
+    <g>
+      <text font-family="Fraunces, Georgia, serif" font-weight="300" font-size="40">47</text>
+      <text y="26" font-size="11" letter-spacing="3" fill="#3A332B">NIGHTS TO KNOW YOU</text>
+    </g>
+    <g transform="translate(240,0)">
+      <text font-family="Fraunces, Georgia, serif" font-weight="300" font-size="40">12y</text>
+      <text y="26" font-size="11" letter-spacing="3" fill="#3A332B">OF RESEARCH</text>
+    </g>
+    <g transform="translate(420,0)">
+      <text font-family="Fraunces, Georgia, serif" font-weight="300" font-size="40">0.1°C</text>
+      <text y="26" font-size="11" letter-spacing="3" fill="#3A332B">TEMP SENSITIVITY</text>
+    </g>
+  </g>
+
+  <!-- ring -->
+  <g transform="translate(1280, 540)" filter="url(#ringShadow)">
+    <ellipse cx="0" cy="0" rx="240" ry="240" fill="url(#ringOuter)"/>
+    <ellipse cx="0" cy="0" rx="172" ry="172" fill="url(#ringInner)"/>
+    <!-- inner highlight -->
+    <path d="M -180 -80 A 200 200 0 0 1 100 -180" stroke="rgba(255,220,180,0.18)" stroke-width="2" fill="none"/>
+    <!-- sensors -->
+    <rect x="-50" y="-12" width="22" height="22" rx="3" fill="#1A0F08" opacity="0.9"/>
+    <rect x="28" y="-12" width="22" height="22" rx="3" fill="#1A0F08" opacity="0.9"/>
+    <!-- LED sensor with glow -->
+    <circle cx="0" cy="0" r="36" fill="url(#sensor)" filter="url(#sensorGlow)" opacity="0.7"/>
+    <circle cx="0" cy="0" r="10" fill="url(#sensor)"/>
+  </g>
+
+  <!-- pulse line -->
+  <g transform="translate(130, 940)">
+    <text font-size="11" letter-spacing="3" fill="#3A332B">LIVE · RESTING</text>
+    <path d="M 150 -8 L 280 -8 L 300 -8 L 310 -28 L 320 12 L 330 -8 L 480 -8 L 500 -8 L 510 -26 L 520 10 L 530 -8 L 680 -8 L 700 -8 L 710 -30 L 720 14 L 730 -8 L 880 -8 L 900 -8 L 910 -26 L 920 10 L 930 -8 L 1080 -8 L 1100 -8 L 1110 -28 L 1120 12 L 1130 -8 L 1260 -8"
+          stroke="#B8704A" stroke-width="1.5" fill="none"/>
+    <text x="1290" font-size="11" letter-spacing="3" fill="#3A332B">58 BPM</text>
+  </g>
+</svg>
