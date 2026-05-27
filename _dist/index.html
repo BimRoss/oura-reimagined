@@ -6,7 +6,7 @@
 <title>Ōura — Listen.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{
     --bone:#F2EBE0;
@@ -15,10 +15,8 @@
     --ink-soft:#3A332B;
     --olive:#4A4A36;
     --copper:#B8704A;
+    --copper-bright:#D88A5C;
     --night:#0E141B;
-    --dawn:#E8C9B0;
-    --noon:#F5EFE6;
-    --dusk:#544738;
     --rule:rgba(22,19,16,.12);
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -27,17 +25,17 @@
   ::selection{background:var(--copper);color:var(--bone)}
   .serif{font-family:"Fraunces",Georgia,serif;font-weight:300;letter-spacing:-.02em}
   .italic{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:300;color:var(--copper)}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;letter-spacing:0}
   a{color:inherit;text-decoration:none}
 
-  /* grain overlay */
   body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.06;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:200;opacity:.06;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
   /* NAV */
   nav{
-    position:fixed;top:0;left:0;right:0;z-index:50;
+    position:fixed;top:0;left:0;right:0;z-index:150;
     display:flex;align-items:center;justify-content:space-between;
     padding:22px 36px;
     mix-blend-mode:difference;color:#fff;
@@ -47,11 +45,15 @@
   nav ul{display:flex;gap:36px;list-style:none}
   nav ul a{opacity:.85;transition:opacity .3s}
   nav ul a:hover{opacity:1}
-  nav .cta{
-    border:1px solid rgba(255,255,255,.4);padding:8px 18px;border-radius:999px;
-    transition:all .3s;
-  }
+  nav .cta{border:1px solid rgba(255,255,255,.4);padding:8px 18px;border-radius:999px;transition:all .3s}
   nav .cta:hover{background:#fff;color:#000;border-color:#fff}
+
+  /* 3D RING CANVAS — persistent across hero */
+  #ring-canvas{
+    position:fixed;top:0;right:0;width:55vw;height:100vh;z-index:5;pointer-events:none;
+    transition:opacity 1s ease, transform 1s ease;
+  }
+  body.past-hero #ring-canvas{opacity:0;transform:translateY(-10vh) scale(.7)}
 
   /* HERO */
   .hero{
@@ -59,182 +61,110 @@
     align-items:center;padding:0 8vw;gap:4vw;overflow:hidden;
     background:radial-gradient(ellipse at 70% 50%, #EFE2D0 0%, var(--bone) 55%, var(--bone-deep) 100%);
   }
-  .eyebrow{
-    display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:32px;
-    opacity:0;animation:rise .9s .2s forwards;
-  }
+  .hero-text{position:relative;z-index:10}
+  .eyebrow{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:32px;opacity:0;animation:rise .9s .2s forwards}
   .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--copper);box-shadow:0 0 0 0 var(--copper);animation:pulse 2.4s infinite}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(184,112,74,.5)}50%{box-shadow:0 0 0 12px rgba(184,112,74,0)}}
-  h1.headline{
-    font-family:"Fraunces",serif;font-weight:300;
-    font-size:clamp(48px, 7.2vw, 116px);line-height:.96;letter-spacing:-.035em;
-    color:var(--ink);
-  }
+  h1.headline{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(44px, 5.4vw, 84px);line-height:.98;letter-spacing:-.03em;color:var(--ink)}
   h1.headline .line{display:block;overflow:hidden}
-  h1.headline .line > span{display:inline-block;transform:translateY(110%);animation:rise 1.1s cubic-bezier(.2,.7,.2,1) forwards}
+  h1.headline .line > span{display:inline-block;transform:translateY(110%);opacity:0;animation:rise 1.1s cubic-bezier(.2,.7,.2,1) forwards}
   h1.headline .line:nth-child(2) > span{animation-delay:.18s}
   h1.headline .line:nth-child(3) > span{animation-delay:.36s}
   @keyframes rise{to{transform:translateY(0);opacity:1}}
-  .sub{
-    max-width:440px;margin-top:36px;font-size:18px;color:var(--ink-soft);line-height:1.55;
-    opacity:0;animation:rise 1s .7s forwards;
-  }
-  .hero-meta{
-    margin-top:56px;display:flex;gap:48px;opacity:0;animation:rise 1s .9s forwards;
-  }
+  .sub{max-width:440px;margin-top:36px;font-size:18px;color:var(--ink-soft);line-height:1.55;opacity:0;animation:rise 1s .7s forwards}
+  .hero-meta{margin-top:56px;display:flex;gap:48px;opacity:0;animation:rise 1s .9s forwards}
   .hero-meta div{display:flex;flex-direction:column;gap:4px}
   .hero-meta .n{font-family:"Fraunces",serif;font-size:32px;font-weight:300;letter-spacing:-.02em}
   .hero-meta .l{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
 
-  /* RING */
-  .ring-stage{
-    position:relative;aspect-ratio:1;width:100%;max-width:560px;justify-self:center;
-    perspective:1600px;
-  }
-  .ring{
-    position:absolute;inset:8%;border-radius:50%;
-    background:
-      radial-gradient(circle at 30% 25%, #FAF6EE 0%, #C9B8A0 18%, #8A7960 45%, #4A3F33 75%, #1A1612 100%);
-    box-shadow:
-      inset 0 -40px 80px rgba(0,0,0,.4),
-      inset 0 20px 40px rgba(255,255,255,.15),
-      0 60px 120px -20px rgba(60,40,20,.4),
-      0 20px 40px -10px rgba(0,0,0,.2);
-    transform-style:preserve-3d;
-    animation:float 7s ease-in-out infinite;
-  }
-  .ring::before{
-    content:"";position:absolute;inset:14%;border-radius:50%;
-    background:radial-gradient(circle at 50% 50%, #2A2018 0%, #0D0906 70%);
-    box-shadow:inset 0 10px 30px rgba(0,0,0,.8), inset 0 -6px 16px rgba(255,200,140,.08);
-  }
-  .ring::after{
-    content:"";position:absolute;top:46%;left:48%;width:14px;height:14px;border-radius:50%;
-    background:radial-gradient(circle, #FF9B5C 0%, #B8704A 40%, #4A2818 100%);
-    box-shadow:0 0 24px 4px rgba(255,140,80,.6), 0 0 60px 12px rgba(255,140,80,.25);
-    animation:sensor 3s ease-in-out infinite;
-  }
-  @keyframes sensor{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
-  @keyframes float{0%,100%{transform:translateY(0) rotateY(-12deg) rotateX(8deg)}50%{transform:translateY(-14px) rotateY(8deg) rotateX(-4deg)}}
-
-  /* Live pulse line */
-  .pulse-rail{
-    position:absolute;left:8vw;right:8vw;bottom:6vh;height:60px;display:flex;align-items:center;gap:24px;
-    opacity:0;animation:rise 1s 1.2s forwards;
-  }
-  .pulse-rail svg{flex:1;height:60px}
-  .pulse-rail .label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
-  .pulse-line{stroke:var(--copper);stroke-width:1.5;fill:none;stroke-dasharray:1200;stroke-dashoffset:0;animation:trace 6s linear infinite}
-  @keyframes trace{0%{stroke-dashoffset:1200}100%{stroke-dashoffset:0}}
+  /* live multi-metric ribbon */
+  .ribbon{position:absolute;left:8vw;right:8vw;bottom:5vh;z-index:10;opacity:0;animation:rise 1s 1.2s forwards}
+  .ribbon-label{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .ribbon-label .live{color:var(--copper);display:inline-flex;align-items:center;gap:6px}
+  .ribbon-label .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--copper);animation:pulse 2s infinite}
+  .ribbon svg{width:100%;height:80px;display:block}
 
   /* CHAPTERS */
-  .chapters{position:relative}
+  .chapters{position:relative;z-index:20}
   .chapter{
-    min-height:100vh;padding:14vh 8vw;display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:center;
+    min-height:100vh;padding:14vh 8vw;display:grid;grid-template-columns:.85fr 1.15fr;gap:6vw;align-items:center;
     position:relative;transition:background 1.2s ease, color 1.2s ease;
   }
   .chapter .meta{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.6;margin-bottom:24px}
-  .chapter h2{
-    font-family:"Fraunces",serif;font-weight:300;font-size:clamp(40px,5.4vw,84px);line-height:1;letter-spacing:-.03em;margin-bottom:32px;
-  }
-  .chapter p{font-size:18px;line-height:1.55;max-width:460px;opacity:.85}
-  .chapter .figure{
-    aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;
-  }
-  .bignum{
-    font-family:"Fraunces",serif;font-weight:300;font-size:clamp(140px,22vw,360px);line-height:.85;letter-spacing:-.05em;
-    background:linear-gradient(180deg, currentColor 0%, currentColor 50%, transparent 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
-    opacity:.92;
-  }
+  .chapter h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(36px,4.6vw,72px);line-height:1.02;letter-spacing:-.03em;margin-bottom:28px}
+  .chapter p{font-size:17px;line-height:1.55;max-width:460px;opacity:.85}
+  .chapter .stats-row{margin-top:32px;display:flex;gap:32px}
+  .chapter .stats-row > div{display:flex;flex-direction:column;gap:4px}
+  .chapter .stats-row .n{font-family:"Fraunces",serif;font-size:28px;font-weight:300}
+  .chapter .stats-row .l{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
 
-  /* SLEEP — deep night */
+  /* SLEEP */
   #sleep{background:linear-gradient(180deg,var(--bone) 0%,#1F2A3A 22%,#0E141B 100%);color:#E8DDCB}
-  #sleep .chapter-inner{color:#E8DDCB}
-  #sleep .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#fff8,transparent),radial-gradient(1.5px 1.5px at 45% 80%,#fff6,transparent),radial-gradient(1px 1px at 85% 20%,#fff,transparent),radial-gradient(1px 1px at 15% 70%,#fff7,transparent);opacity:.7;pointer-events:none}
-  #sleep .moon{
-    width:60%;aspect-ratio:1;border-radius:50%;
-    background:radial-gradient(circle at 35% 35%, #F2EBE0 0%, #C9B8A0 50%, #4A4A36 100%);
-    box-shadow:0 0 120px 20px rgba(242,235,224,.15);
-    position:relative;
-  }
-  #sleep .moon::after{
-    content:"";position:absolute;inset:0;border-radius:50%;
-    background:radial-gradient(circle at 65% 65%, transparent 40%, rgba(14,20,27,.85) 70%);
-  }
+  #sleep .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#fff8,transparent),radial-gradient(1.5px 1.5px at 45% 80%,#fff6,transparent),radial-gradient(1px 1px at 85% 20%,#fff,transparent),radial-gradient(1px 1px at 15% 70%,#fff7,transparent);opacity:.5;pointer-events:none}
+  .hypnogram{position:relative;width:100%}
+  .hypnogram svg{width:100%;height:auto;display:block}
+  .axis-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1px;fill:rgba(232,221,203,.5)}
+  .stage-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1px;fill:rgba(232,221,203,.6)}
 
-  /* RECOVERY — dawn */
+  /* RECOVERY */
   #recovery{background:linear-gradient(180deg,#0E141B 0%,#3A2A30 18%,#E8C9B0 60%,#F2EBE0 100%);color:var(--ink)}
-  #recovery .ring-chart{width:70%;aspect-ratio:1;position:relative}
-  #recovery .ring-chart svg{width:100%;height:100%;transform:rotate(-90deg)}
-  #recovery .ring-chart circle{fill:none;stroke-width:14}
-  #recovery .ring-chart .track{stroke:rgba(22,19,16,.08)}
-  #recovery .ring-chart .arc{stroke:var(--copper);stroke-linecap:round;stroke-dasharray:534;stroke-dashoffset:534;transition:stroke-dashoffset 2.4s cubic-bezier(.2,.8,.2,1)}
-  #recovery.in-view .ring-chart .arc{stroke-dashoffset:90}
-  #recovery .ring-chart .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-  #recovery .ring-chart .score{font-family:"Fraunces",serif;font-size:84px;font-weight:300;line-height:1}
-  #recovery .ring-chart .lbl{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.7;margin-top:6px}
+  .heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;width:100%;max-width:520px}
+  .heatmap .cell{aspect-ratio:1;border-radius:6px;background:rgba(22,19,16,.06);position:relative;transition:transform .3s}
+  .heatmap .cell.lvl-1{background:rgba(184,112,74,.18)}
+  .heatmap .cell.lvl-2{background:rgba(184,112,74,.35)}
+  .heatmap .cell.lvl-3{background:rgba(184,112,74,.55)}
+  .heatmap .cell.lvl-4{background:rgba(184,112,74,.75)}
+  .heatmap .cell.lvl-5{background:#B8704A}
+  .heatmap .cell:hover{transform:scale(1.15);z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+  .heatmap .cell .v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:9px;color:var(--ink);opacity:0}
+  .heatmap .cell:hover .v{opacity:1}
+  .gauge{width:240px;height:240px;position:relative}
+  .gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .gauge .track{fill:none;stroke:rgba(22,19,16,.08);stroke-width:10}
+  .gauge .arc{fill:none;stroke:var(--copper);stroke-linecap:round;stroke-width:10;stroke-dasharray:534;stroke-dashoffset:534;transition:stroke-dashoffset 2.4s cubic-bezier(.2,.8,.2,1)}
+  #recovery.in-view .gauge .arc{stroke-dashoffset:90}
+  .gauge .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .gauge .score{font-family:"Fraunces",serif;font-size:72px;font-weight:300;line-height:1}
+  .gauge .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;opacity:.6;margin-top:4px}
+  .recovery-grid{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:start}
 
-  /* RHYTHM — noon */
+  /* RHYTHM */
   #rhythm{background:linear-gradient(180deg,#F2EBE0 0%,#EFE2D0 100%);color:var(--ink)}
-  #rhythm .wave{width:100%;aspect-ratio:1.2/1;position:relative}
-  #rhythm svg{width:100%;height:100%}
-  #rhythm .w{fill:none;stroke-width:1.5;stroke-linecap:round}
+  .cycle-wheel{width:100%;max-width:540px;aspect-ratio:1;position:relative}
+  .cycle-wheel svg{width:100%;height:100%}
+  .phase-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1.5px;fill:var(--ink-soft);text-transform:uppercase}
 
-  /* LONGEVITY — dusk */
+  /* LONGEVITY */
   #longevity{background:linear-gradient(180deg,#EFE2D0 0%,#544738 60%,#1A1814 100%);color:#E8DDCB}
+  .trajectory{width:100%;max-width:680px}
+  .trajectory svg{width:100%;height:auto;display:block}
+  .traj-axis{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1px;fill:rgba(232,221,203,.5)}
+  .traj-legend{display:flex;gap:24px;margin-top:24px;font-size:12px;letter-spacing:.1em}
+  .traj-legend .swatch{display:inline-block;width:24px;height:2px;vertical-align:middle;margin-right:8px}
 
   /* NAME REVEAL */
-  .reveal{
-    min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8vw;
-    background:#0E141B;color:#E8DDCB;text-align:center;position:relative;overflow:hidden;
-  }
-  .reveal::before{
-    content:"";position:absolute;inset:0;
-    background:radial-gradient(circle at 50% 40%, rgba(184,112,74,.18) 0%, transparent 50%);
-  }
+  .reveal{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8vw;background:#0E141B;color:#E8DDCB;text-align:center;position:relative;overflow:hidden;z-index:20}
+  .reveal::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%, rgba(184,112,74,.18) 0%, transparent 50%)}
   .reveal h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(48px,6vw,92px);line-height:1.05;letter-spacing:-.03em;max-width:18ch}
-  .reveal h2 .name{
-    font-style:italic;color:var(--copper);
-    border-bottom:1px solid rgba(184,112,74,.4);padding-bottom:4px;
-  }
-  .reveal input{
-    margin-top:48px;background:transparent;border:none;border-bottom:1px solid rgba(232,221,203,.3);
-    color:#E8DDCB;font-family:"Fraunces",serif;font-size:24px;text-align:center;padding:12px 8px;width:280px;outline:none;
-    transition:border-color .3s;
-  }
+  .reveal h2 .name{font-style:italic;color:var(--copper);border-bottom:1px solid rgba(184,112,74,.4);padding-bottom:4px}
+  .reveal input{margin-top:48px;background:transparent;border:none;border-bottom:1px solid rgba(232,221,203,.3);color:#E8DDCB;font-family:"Fraunces",serif;font-size:24px;text-align:center;padding:12px 8px;width:280px;outline:none;transition:border-color .3s}
   .reveal input:focus{border-color:var(--copper)}
   .reveal .hint{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.5;margin-top:14px}
 
   /* MEMBERSHIP */
-  .member{
-    padding:14vh 8vw;background:var(--bone);display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:center;
-  }
+  .member{padding:14vh 8vw;background:var(--bone);display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:center;z-index:20;position:relative}
   .member .col h3{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(36px,4.4vw,64px);line-height:1.02;letter-spacing:-.03em;margin-bottom:24px}
   .member .col p{font-size:17px;line-height:1.6;color:var(--ink-soft);max-width:460px;margin-bottom:32px}
-  .card{
-    aspect-ratio:1.586;border-radius:20px;padding:32px;color:#F2EBE0;
-    background:linear-gradient(135deg,#1A1814 0%,#3A332B 50%,#544738 100%);
-    box-shadow:0 40px 80px -20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
-    display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;
-    transform:rotate(-2deg);transition:transform .6s cubic-bezier(.2,.8,.2,1);
-  }
+  .card{aspect-ratio:1.586;border-radius:20px;padding:32px;color:#F2EBE0;background:linear-gradient(135deg,#1A1814 0%,#3A332B 50%,#544738 100%);box-shadow:0 40px 80px -20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transform:rotate(-2deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
   .card:hover{transform:rotate(0) translateY(-4px)}
-  .card::before{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(115deg,transparent 30%,rgba(255,220,180,.18) 50%,transparent 70%);
-    transform:translateX(-100%);transition:transform 1.2s;
-  }
+  .card::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,220,180,.18) 50%,transparent 70%);transform:translateX(-100%);transition:transform 1.2s}
   .card:hover::before{transform:translateX(100%)}
   .card .top{display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.7}
   .card .mid{font-family:"Fraunces",serif;font-size:48px;font-weight:300;letter-spacing:-.02em;line-height:1}
   .card .mid em{font-style:italic;color:var(--copper)}
   .card .bot{display:flex;justify-content:space-between;align-items:flex-end;font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
 
-  /* FOOTER */
-  footer{
-    background:#0E141B;color:#A89A85;padding:80px 8vw 40px;
-  }
+  footer{background:#0E141B;color:#A89A85;padding:80px 8vw 40px;position:relative;z-index:20}
   footer .top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:60px;border-bottom:1px solid rgba(232,221,203,.08)}
   footer h4{font-family:"Fraunces",serif;font-weight:300;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#E8DDCB;margin-bottom:16px}
   footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
@@ -245,113 +175,142 @@
 
   @media (max-width:880px){
     .hero,.chapter,.member{grid-template-columns:1fr;padding-top:120px;padding-bottom:80px}
-    .ring-stage{max-width:380px}
+    #ring-canvas{position:relative;width:100vw;height:60vh}
     nav ul{display:none}
     footer .top{grid-template-columns:1fr 1fr;gap:32px}
+    .recovery-grid{grid-template-columns:1fr}
   }
 </style>
 </head>
 <body>
 
+<canvas id="ring-canvas"></canvas>
+
 <nav>
   <div class="mark">ŌURA</div>
   <ul>
+    <li><a href="#sleep">Sleep</a></li>
+    <li><a href="#recovery">Recovery</a></li>
+    <li><a href="#rhythm">Rhythm</a></li>
+    <li><a href="#longevity">Longevity</a></li>
     <li><a href="#">Shop</a></li>
-    <li><a href="#">Health</a></li>
-    <li><a href="#">Experience</a></li>
-    <li><a href="#">Research</a></li>
-    <li><a href="#">Teams</a></li>
   </ul>
   <a class="cta" href="#">Begin</a>
 </nav>
 
 <section class="hero">
-  <div>
-    <div class="eyebrow"><span class="dot"></span> Ōura Ring 4 — Now in titanium</div>
+  <div class="hero-text">
+    <div class="eyebrow"><span class="dot"></span> Ōura Ring 4 — Titanium · 2.2g · 0.0 mm gap</div>
     <h1 class="headline">
       <span class="line"><span>Your body has been</span></span>
       <span class="line"><span>telling you <em class="italic">everything.</em></span></span>
       <span class="line"><span>Ōura listens.</span></span>
     </h1>
-    <p class="sub">A ring that disappears on your finger and reappears as clarity — sleep, recovery, rhythm, longevity. 50+ signals, one soft voice.</p>
+    <p class="sub">A razor-thin titanium ring on your finger. 50+ biosignals, sampled 250 times a second, read into one quiet voice.</p>
     <div class="hero-meta">
-      <div><div class="n">47</div><div class="l">Nights to know you</div></div>
-      <div><div class="n">12y</div><div class="l">Of research</div></div>
-      <div><div class="n">0.1°C</div><div class="l">Temp sensitivity</div></div>
+      <div><div class="n">2.2<span style="font-size:.5em">g</span></div><div class="l">Titanium</div></div>
+      <div><div class="n">8<span style="font-size:.5em">d</span></div><div class="l">Battery</div></div>
+      <div><div class="n">250<span style="font-size:.5em">Hz</span></div><div class="l">Sample rate</div></div>
+      <div><div class="n">50+</div><div class="l">Signals</div></div>
     </div>
   </div>
-  <div class="ring-stage"><div class="ring"></div></div>
+  <div></div>
 
-  <div class="pulse-rail">
-    <span class="label">Live · resting</span>
-    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-      <path class="pulse-line" d="M0,30 L120,30 L140,30 L150,10 L160,50 L170,30 L300,30 L320,30 L330,12 L340,48 L350,30 L500,30 L520,30 L530,8 L540,52 L550,30 L700,30 L720,30 L730,14 L740,46 L750,30 L900,30 L920,30 L930,10 L940,50 L950,30 L1100,30 L1200,30"/>
+  <div class="ribbon">
+    <div class="ribbon-label">
+      <span><span class="mono">24H · LAST FULL DAY</span></span>
+      <span class="live">LIVE · 58 BPM</span>
+    </div>
+    <svg viewBox="0 0 1600 80" preserveAspectRatio="none" id="ribbon-svg">
+      <!-- generated by JS -->
     </svg>
-    <span class="label">58 bpm</span>
   </div>
 </section>
 
 <section class="chapters">
+
   <article class="chapter" id="sleep">
     <div class="stars"></div>
-    <div class="chapter-inner">
+    <div>
       <div class="meta">Chapter 01 · Sleep</div>
       <h2>The first place<br/><em class="italic">healing</em> happens.</h2>
-      <p>Eight hours is a number. <em class="italic">Restoration</em> is a state. Ōura measures the gap between them — REM, deep, the architecture of your night — and tells you what to change before you feel it.</p>
+      <p>Every stage of last night, mapped to the minute. REM where it should be. Deep where it shouldn't be cut short. Heart rate falling at the right hour. Body temperature finding its trough at 4:13 AM.</p>
+      <div class="stats-row">
+        <div><div class="n">8<span style="font-size:.5em">h 12m</span></div><div class="l">Total</div></div>
+        <div><div class="n">87</div><div class="l">Sleep score</div></div>
+        <div><div class="n">−0.32°<span style="font-size:.5em">C</span></div><div class="l">Body temp</div></div>
+      </div>
     </div>
-    <div class="figure"><div class="moon"></div></div>
+    <div class="hypnogram">
+      <svg viewBox="0 0 800 360" id="hypno-svg"></svg>
+    </div>
   </article>
 
   <article class="chapter" id="recovery">
-    <div class="chapter-inner">
+    <div>
       <div class="meta">Chapter 02 · Recovery</div>
       <h2>A readiness score<br/>that reads <em class="italic">you</em>.</h2>
-      <p>HRV, body temperature, respiratory rate, prior strain — woven into a single number that tells you whether today is for pushing or for softness. Most days it knows before you do.</p>
+      <p>HRV, body temperature, respiratory rate, prior strain — woven into a single number that tells you whether today is for pushing or for softness. Eight weeks of mornings shown to the right.</p>
+      <div class="stats-row">
+        <div><div class="n">87</div><div class="l">Today</div></div>
+        <div><div class="n">82</div><div class="l">28-day avg</div></div>
+        <div><div class="n">+9<span style="font-size:.5em">ms</span></div><div class="l">HRV trend</div></div>
+      </div>
     </div>
-    <div class="figure">
-      <div class="ring-chart">
+    <div class="recovery-grid">
+      <div class="gauge">
         <svg viewBox="0 0 200 200">
           <circle class="track" cx="100" cy="100" r="85"/>
           <circle class="arc" cx="100" cy="100" r="85"/>
         </svg>
         <div class="center">
           <div class="score">87</div>
-          <div class="lbl">Ready</div>
+          <div class="lbl">READY</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;opacity:.55;margin-bottom:10px">28 DAYS · M T W T F S S</div>
+        <div class="heatmap" id="heatmap"></div>
+        <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;opacity:.4;margin-top:10px">
+          <span>LOW</span><span>RESTFUL  RESTORED  PRIMED  PEAK</span>
         </div>
       </div>
     </div>
   </article>
 
   <article class="chapter" id="rhythm">
-    <div class="chapter-inner">
+    <div>
       <div class="meta">Chapter 03 · Rhythm</div>
       <h2>Cycles, not<br/><em class="italic">spikes</em>.</h2>
       <p>Your body keeps time — circadian, hormonal, seasonal. Ōura draws the curves you can't feel, the ones that decide how Tuesday goes. For women, an unmatched cycle map. For everyone, the rest of you.</p>
-    </div>
-    <div class="figure">
-      <div class="wave">
-        <svg viewBox="0 0 400 320">
-          <defs>
-            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#B8704A" stop-opacity=".0"/><stop offset=".5" stop-color="#B8704A" stop-opacity="1"/><stop offset="1" stop-color="#B8704A" stop-opacity="0"/></linearGradient>
-            <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#4A4A36" stop-opacity=".0"/><stop offset=".5" stop-color="#4A4A36" stop-opacity="1"/><stop offset="1" stop-color="#4A4A36" stop-opacity="0"/></linearGradient>
-          </defs>
-          <path class="w" stroke="url(#g1)" d="M0,180 Q50,80 100,140 T200,160 T300,90 T400,170"/>
-          <path class="w" stroke="url(#g2)" d="M0,210 Q50,260 100,200 T200,220 T300,260 T400,200"/>
-          <path class="w" stroke="url(#g1)" opacity=".5" d="M0,150 Q50,40 100,110 T200,130 T300,50 T400,140"/>
-          <path class="w" stroke="url(#g2)" opacity=".5" d="M0,240 Q50,290 100,230 T200,250 T300,290 T400,230"/>
-        </svg>
+      <div class="stats-row">
+        <div><div class="n">28<span style="font-size:.5em">d</span></div><div class="l">Cycle</div></div>
+        <div><div class="n">Day 14</div><div class="l">Ovulatory</div></div>
+        <div><div class="n">36.7°<span style="font-size:.5em">C</span></div><div class="l">BBT</div></div>
       </div>
+    </div>
+    <div class="cycle-wheel">
+      <svg viewBox="0 0 540 540" id="cycle-svg"></svg>
     </div>
   </article>
 
   <article class="chapter" id="longevity">
-    <div class="chapter-inner">
+    <div>
       <div class="meta">Chapter 04 · Longevity</div>
       <h2>Don't just live longer.<br/>Live <em class="italic">longer awake</em>.</h2>
-      <p>Cardio age, metabolic age, the slow numbers that decide the next thirty years. We surface them quietly, daily, with no urgency — because behavior change isn't a sprint. It's a ring on your finger for a decade.</p>
+      <p>Cardio age, metabolic age, the slow numbers that decide the next thirty years. The black line is the population. The copper line is you — seven years younger, and pulling away.</p>
+      <div class="stats-row">
+        <div><div class="n">34<span style="font-size:.5em">yr</span></div><div class="l">Cardio age</div></div>
+        <div><div class="n">−7<span style="font-size:.5em">yr</span></div><div class="l">vs chrono</div></div>
+        <div><div class="n">47<span style="font-size:.5em">ml</span></div><div class="l">VO₂ max</div></div>
+      </div>
     </div>
-    <div class="figure">
-      <div class="bignum" style="color:#E8DDCB">−7<span style="font-size:.4em;color:#B8704A">yrs</span></div>
+    <div class="trajectory">
+      <svg viewBox="0 0 700 360" id="traj-svg"></svg>
+      <div class="traj-legend">
+        <span><span class="swatch" style="background:rgba(232,221,203,.5)"></span>Population</span>
+        <span><span class="swatch" style="background:#B8704A"></span>You</span>
+      </div>
     </div>
   </article>
 </section>
@@ -379,9 +338,7 @@
 
 <footer>
   <div class="top">
-    <div>
-      <div class="made"><em>Made in Oulu,<br/>67° north.</em><small>The cold makes things clearer.</small></div>
-    </div>
+    <div><div class="made"><em>Made in Oulu,<br/>67° north.</em><small>The cold makes things clearer.</small></div></div>
     <div><h4>Shop</h4><ul><li>Ōura Ring 4</li><li>Accessories</li><li>Gift</li><li>Sizing kit</li></ul></div>
     <div><h4>Learn</h4><ul><li>Health features</li><li>The science</li><li>Stories</li><li>Newsroom</li></ul></div>
     <div><h4>Company</h4><ul><li>About</li><li>Research</li><li>Careers</li><li>Contact</li></ul></div>
@@ -389,28 +346,497 @@
   <div class="bot"><span><span class="ring-small"></span>ŌURA © 2026</span><span>Privacy · Terms · HIPAA</span></div>
 </footer>
 
-<script>
-  // Intersection-driven chapter reveal
-  const io = new IntersectionObserver((es)=>es.forEach(e=>e.target.classList.toggle('in-view', e.isIntersecting)),{threshold:.4});
-  document.querySelectorAll('.chapter').forEach(c=>io.observe(c));
-
-  // Name reveal
-  const nm = document.getElementById('nm');
-  document.getElementById('nameInput').addEventListener('input', (e)=>{
-    nm.textContent = e.target.value.trim() || 'you';
-  });
-
-  // Ring follows cursor (subtle)
-  const ring = document.querySelector('.ring');
-  const stage = document.querySelector('.ring-stage');
-  stage.addEventListener('mousemove', (e)=>{
-    const r = stage.getBoundingClientRect();
-    const x = (e.clientX - r.left)/r.width - .5;
-    const y = (e.clientY - r.top)/r.height - .5;
-    ring.style.transform = `rotateY(${x*30}deg) rotateX(${-y*20}deg) translateZ(0)`;
-    ring.style.animation = 'none';
-  });
-  stage.addEventListener('mouseleave', ()=>{ ring.style.animation = ''; ring.style.transform=''; });
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js"
+  }
+}
 </script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ====================== 3D RING ====================== */
+const canvas = document.getElementById('ring-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+camera.position.set(0, 0, 8);
+
+// Lights — warm key, cool fill, copper rim
+const key = new THREE.DirectionalLight(0xfff0e0, 2.2);
+key.position.set(4, 5, 6);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xb8d4ff, 0.6);
+fill.position.set(-5, -2, 3);
+scene.add(fill);
+const rim = new THREE.DirectionalLight(0xb8704a, 1.4);
+rim.position.set(-3, 2, -5);
+scene.add(rim);
+const ambient = new THREE.HemisphereLight(0xfaf6ee, 0x1a1612, 0.35);
+scene.add(ambient);
+
+// Procedural envmap for metal reflections
+const envScene = new THREE.Scene();
+envScene.background = new THREE.Color(0xefe2d0);
+const envCam = new THREE.CubeCamera(0.1, 100, new THREE.WebGLCubeRenderTarget(256, {generateMipmaps:true, minFilter:THREE.LinearMipmapLinearFilter}));
+envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50,32,32), new THREE.MeshBasicMaterial({color:0xefe2d0, side:THREE.BackSide})));
+const envLight1 = new THREE.Mesh(new THREE.SphereGeometry(8, 16, 16), new THREE.MeshBasicMaterial({color:0xffffff}));
+envLight1.position.set(20, 15, 10); envScene.add(envLight1);
+const envLight2 = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 16), new THREE.MeshBasicMaterial({color:0xb8704a}));
+envLight2.position.set(-15, -5, -8); envScene.add(envLight2);
+envCam.update(renderer, envScene);
+scene.environment = envCam.renderTarget.texture;
+
+// THE RING — razor thin titanium band
+const ringGroup = new THREE.Group();
+const R = 1.55;          // major radius (finger size)
+const tubeR = 0.16;      // thin band thickness
+const bandHeight = 0.42; // ring height along finger axis
+
+// Outer band — use cylinder with hollow center for razor profile
+const outerGeo = new THREE.CylinderGeometry(R + tubeR*0.18, R + tubeR*0.18, bandHeight, 96, 1, true);
+const innerGeo = new THREE.CylinderGeometry(R - tubeR*0.18, R - tubeR*0.18, bandHeight, 96, 1, true);
+const topGeo = new THREE.RingGeometry(R - tubeR*0.18, R + tubeR*0.18, 96);
+const botGeo = topGeo.clone();
+
+const titanium = new THREE.MeshStandardMaterial({
+  color: 0xc9b8a0,
+  metalness: 0.95,
+  roughness: 0.28,
+  envMapIntensity: 1.4,
+});
+
+const outer = new THREE.Mesh(outerGeo, titanium);
+const inner = new THREE.Mesh(innerGeo, new THREE.MeshStandardMaterial({color:0x8a7960, metalness:0.85, roughness:0.42, side:THREE.BackSide, envMapIntensity:0.6}));
+const top = new THREE.Mesh(topGeo, titanium); top.rotation.x = -Math.PI/2; top.position.y = bandHeight/2;
+const bot = new THREE.Mesh(botGeo, titanium); bot.rotation.x = -Math.PI/2; bot.position.y = -bandHeight/2;
+
+ringGroup.add(outer, inner, top, bot);
+
+// Inner sensors — small panels visible through the band
+function sensor(angleDeg, w, h, color, emissive=0){
+  const g = new THREE.PlaneGeometry(w, h);
+  const m = new THREE.MeshStandardMaterial({color, metalness:.2, roughness:.6, emissive, emissiveIntensity: emissive ? 1.4 : 0});
+  const mesh = new THREE.Mesh(g, m);
+  const a = angleDeg * Math.PI/180;
+  mesh.position.set(Math.cos(a)*(R - tubeR*0.17), 0, Math.sin(a)*(R - tubeR*0.17));
+  mesh.lookAt(0,0,0);
+  return mesh;
+}
+ringGroup.add(sensor(-90, 0.16, 0.18, 0x1a0f08));   // IR sensor
+ringGroup.add(sensor(-72, 0.16, 0.18, 0x1a0f08));   // IR sensor
+const led = sensor(-81, 0.06, 0.06, 0xff7030, 0xff5020);
+ringGroup.add(led);
+
+// Subtle engraving line on outside (Oura visual signature)
+const engrave = new THREE.Mesh(
+  new THREE.TorusGeometry(R + tubeR*0.18 + 0.001, 0.003, 8, 96),
+  new THREE.MeshStandardMaterial({color:0x4a3f33, metalness:.5, roughness:.7})
+);
+engrave.rotation.x = Math.PI/2;
+ringGroup.add(engrave);
+
+ringGroup.rotation.x = 0.45;
+scene.add(ringGroup);
+
+// Sizing
+function resize(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w/h;
+  camera.updateProjectionMatrix();
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Cursor parallax
+let mouseX = 0, mouseY = 0, tgtX = 0, tgtY = 0;
+window.addEventListener('mousemove', e => {
+  tgtX = (e.clientX / window.innerWidth - 0.5) * 0.6;
+  tgtY = (e.clientY / window.innerHeight - 0.5) * 0.4;
+});
+
+let t = 0;
+function tick(){
+  t += 0.005;
+  mouseX += (tgtX - mouseX) * 0.06;
+  mouseY += (tgtY - mouseY) * 0.06;
+  ringGroup.rotation.y = t + mouseX;
+  ringGroup.rotation.x = 0.45 + Math.sin(t*0.7)*0.06 - mouseY*0.5;
+  // LED pulse
+  const p = (Math.sin(t*4) + 1) / 2;
+  led.material.emissiveIntensity = 1.0 + p * 1.8;
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+
+// Hide ring after hero
+const hero = document.querySelector('.hero');
+new IntersectionObserver(es => es.forEach(e => {
+  document.body.classList.toggle('past-hero', !e.isIntersecting);
+}), { threshold: 0.1 }).observe(hero);
+
+/* ====================== DATA VIZ ====================== */
+
+// HERO RIBBON — 24h overlay of HR, HRV, temp, activity
+(function ribbon(){
+  const svg = document.getElementById('ribbon-svg');
+  const W = 1600, H = 80;
+  const ns = 'http://www.w3.org/2000/svg';
+  // Sleep band
+  const sleep = document.createElementNS(ns,'rect');
+  sleep.setAttribute('x', 0); sleep.setAttribute('y', 0); sleep.setAttribute('width', 360); sleep.setAttribute('height', H);
+  sleep.setAttribute('fill', 'rgba(74,74,54,.08)');
+  svg.appendChild(sleep);
+  const sleep2 = document.createElementNS(ns,'rect');
+  sleep2.setAttribute('x', 1480); sleep2.setAttribute('y', 0); sleep2.setAttribute('width', 120); sleep2.setAttribute('height', H);
+  sleep2.setAttribute('fill', 'rgba(74,74,54,.08)');
+  svg.appendChild(sleep2);
+
+  // HR curve (resting low at night, peaks during day)
+  function curve(fn, color, opacity=1, width=1.5){
+    let d = '';
+    for (let i = 0; i <= 96; i++){
+      const x = (i/96) * W;
+      const y = H - fn(i/96) * H;
+      d += (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    }
+    const p = document.createElementNS(ns,'path');
+    p.setAttribute('d', d);
+    p.setAttribute('stroke', color);
+    p.setAttribute('stroke-width', width);
+    p.setAttribute('fill', 'none');
+    p.setAttribute('opacity', opacity);
+    p.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(p);
+  }
+  // HR: low during sleep, high midday + workout
+  curve(t => {
+    const sleeping = t < 0.22 || t > 0.92;
+    const base = sleeping ? 0.18 : 0.42;
+    const workout = Math.exp(-Math.pow((t-0.55)*14, 2)) * 0.45;
+    const noise = Math.sin(t*60)*0.02 + Math.sin(t*23)*0.015;
+    return Math.max(0.05, Math.min(0.92, base + workout + noise));
+  }, '#B8704A', 1, 1.6);
+  // HRV: inverse-ish
+  curve(t => {
+    const sleeping = t < 0.22 || t > 0.92;
+    const base = sleeping ? 0.78 : 0.5;
+    const dip = Math.exp(-Math.pow((t-0.55)*14, 2)) * 0.3;
+    return Math.max(0.1, Math.min(0.95, base - dip + Math.sin(t*40)*0.02));
+  }, '#4A4A36', 0.55, 1.2);
+  // Body temp: trough at 4am, peak at 6pm
+  curve(t => 0.5 + Math.sin((t - 0.83) * Math.PI * 2) * 0.18, '#D88A5C', 0.4, 1);
+  // Hour ticks
+  for (let h = 0; h <= 24; h += 6){
+    const x = (h/24) * W;
+    const tk = document.createElementNS(ns,'line');
+    tk.setAttribute('x1', x); tk.setAttribute('x2', x); tk.setAttribute('y1', H-4); tk.setAttribute('y2', H);
+    tk.setAttribute('stroke', 'rgba(22,19,16,.3)');
+    svg.appendChild(tk);
+    const txt = document.createElementNS(ns,'text');
+    txt.setAttribute('x', x + 4); txt.setAttribute('y', H - 8);
+    txt.setAttribute('font-family', 'JetBrains Mono, monospace');
+    txt.setAttribute('font-size', '9');
+    txt.setAttribute('fill', 'rgba(22,19,16,.4)');
+    txt.textContent = (h === 24 ? '00' : (h<10?'0':'') + h) + ':00';
+    svg.appendChild(txt);
+  }
+})();
+
+// SLEEP HYPNOGRAM
+(function hypnogram(){
+  const svg = document.getElementById('hypno-svg');
+  const W = 800, H = 360;
+  const ns = 'http://www.w3.org/2000/svg';
+  const startMin = 0, endMin = 492; // 8h12m
+  // Stages: 0=awake, 1=REM, 2=light, 3=deep
+  const stages = [
+    [0,5,0],[5,18,2],[18,42,3],[42,68,2],[68,88,1],
+    [88,112,3],[112,140,2],[140,168,1],[168,196,3],
+    [196,228,2],[228,248,1],[248,268,2],[268,294,3],
+    [294,326,2],[326,352,1],[352,378,2],[378,402,3],
+    [402,432,2],[432,460,1],[460,478,2],[478,485,0],[485,492,2]
+  ];
+  const yMap = {0: 40, 1: 100, 2: 180, 3: 280};
+  const colors = {0:'#E8DDCB', 1:'#D88A5C', 2:'#8A7960', 3:'#4A4A36'};
+
+  // Draw stage bands
+  let prev = null;
+  stages.forEach(([s,e,k]) => {
+    const x1 = 40 + ((s-startMin)/(endMin-startMin))*(W-60);
+    const x2 = 40 + ((e-startMin)/(endMin-startMin))*(W-60);
+    const y = yMap[k];
+    // step line
+    if (prev !== null){
+      const vline = document.createElementNS(ns,'line');
+      vline.setAttribute('x1', x1); vline.setAttribute('x2', x1);
+      vline.setAttribute('y1', yMap[prev]); vline.setAttribute('y2', y);
+      vline.setAttribute('stroke', '#E8DDCB'); vline.setAttribute('stroke-width', 1.5); vline.setAttribute('opacity', .7);
+      svg.appendChild(vline);
+    }
+    const hline = document.createElementNS(ns,'line');
+    hline.setAttribute('x1', x1); hline.setAttribute('x2', x2);
+    hline.setAttribute('y1', y); hline.setAttribute('y2', y);
+    hline.setAttribute('stroke', colors[k]); hline.setAttribute('stroke-width', 3); hline.setAttribute('stroke-linecap','round');
+    svg.appendChild(hline);
+    prev = k;
+  });
+
+  // HR curve overlay
+  let d = '';
+  for (let i = 0; i <= 100; i++){
+    const x = 40 + (i/100)*(W-60);
+    const t = i/100;
+    const hr = 62 - Math.sin(t * Math.PI * 1.8) * 14 - (t < 0.3 ? 4 : 0) + Math.sin(t*30)*1.5;
+    const y = 340 - ((hr - 42) / 30) * 60;
+    d += (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  }
+  const hr = document.createElementNS(ns,'path');
+  hr.setAttribute('d', d); hr.setAttribute('stroke', '#B8704A'); hr.setAttribute('stroke-width', 1.4); hr.setAttribute('fill','none'); hr.setAttribute('opacity', .85);
+  svg.appendChild(hr);
+
+  // Stage labels
+  const labels = ['AWAKE','REM','LIGHT','DEEP'];
+  [0,1,2,3].forEach(k => {
+    const txt = document.createElementNS(ns,'text');
+    txt.setAttribute('x', 0); txt.setAttribute('y', yMap[k] + 3);
+    txt.setAttribute('class','stage-label');
+    txt.textContent = labels[k];
+    svg.appendChild(txt);
+  });
+  // Time axis
+  ['23:14','01:00','03:00','05:00','07:26'].forEach((label,i) => {
+    const x = 40 + (i/4)*(W-60);
+    const txt = document.createElementNS(ns,'text');
+    txt.setAttribute('x', x); txt.setAttribute('y', H - 6);
+    txt.setAttribute('class','axis-label');
+    txt.setAttribute('text-anchor', i===0?'start':(i===4?'end':'middle'));
+    txt.textContent = label;
+    svg.appendChild(txt);
+  });
+  // HR axis label
+  const hrLbl = document.createElementNS(ns,'text');
+  hrLbl.setAttribute('x', W-4); hrLbl.setAttribute('y', 320); hrLbl.setAttribute('class','axis-label'); hrLbl.setAttribute('text-anchor','end'); hrLbl.setAttribute('fill','#B8704A');
+  hrLbl.textContent = 'HR · 42–68 BPM';
+  svg.appendChild(hrLbl);
+})();
+
+// RECOVERY HEATMAP — 28 days
+(function heatmap(){
+  const container = document.getElementById('heatmap');
+  // Deterministic-ish pattern, biased upward
+  const vals = [3,2,4,3,5,4,3, 2,3,4,5,5,4,3, 4,5,4,3,4,5,4, 3,4,5,4,5,4,3];
+  vals.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'cell lvl-' + v;
+    const score = 55 + v * 7 + (i % 3);
+    c.innerHTML = '<span class="v">' + score + '</span>';
+    container.appendChild(c);
+  });
+})();
+
+// RHYTHM CYCLE WHEEL — 28-day polar with body temp ring
+(function cycle(){
+  const svg = document.getElementById('cycle-svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const cx = 270, cy = 270;
+  const phases = [
+    { name: 'MENSTRUAL', start: 0, end: 5, color: '#B8704A', tone: 0.9 },
+    { name: 'FOLLICULAR', start: 5, end: 13, color: '#D8A88A', tone: 0.55 },
+    { name: 'OVULATORY', start: 13, end: 16, color: '#E8C9B0', tone: 0.8 },
+    { name: 'LUTEAL', start: 16, end: 28, color: '#8A7960', tone: 0.6 },
+  ];
+  function polar(r, deg){
+    const rad = (deg - 90) * Math.PI/180;
+    return [cx + Math.cos(rad)*r, cy + Math.sin(rad)*r];
+  }
+  function arcPath(r, startDeg, endDeg, w){
+    const [x1,y1] = polar(r, startDeg);
+    const [x2,y2] = polar(r, endDeg);
+    const [x3,y3] = polar(r-w, endDeg);
+    const [x4,y4] = polar(r-w, startDeg);
+    const large = endDeg - startDeg > 180 ? 1 : 0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${r-w} ${r-w} 0 ${large} 0 ${x4} ${y4} Z`;
+  }
+
+  // Phase rings
+  phases.forEach(p => {
+    const path = document.createElementNS(ns,'path');
+    path.setAttribute('d', arcPath(210, (p.start/28)*360, (p.end/28)*360, 38));
+    path.setAttribute('fill', p.color);
+    path.setAttribute('opacity', p.tone * 0.55);
+    svg.appendChild(path);
+  });
+
+  // Day ticks
+  for (let i = 0; i < 28; i++){
+    const deg = (i/28)*360;
+    const [x1,y1] = polar(168, deg);
+    const [x2,y2] = polar(174, deg);
+    const ln = document.createElementNS(ns,'line');
+    ln.setAttribute('x1',x1); ln.setAttribute('y1',y1); ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
+    ln.setAttribute('stroke','rgba(22,19,16,.3)'); ln.setAttribute('stroke-width', i%7===0?1.5:0.8);
+    svg.appendChild(ln);
+    if (i%7===0){
+      const [tx,ty] = polar(155, deg);
+      const t = document.createElementNS(ns,'text');
+      t.setAttribute('x',tx); t.setAttribute('y',ty+3); t.setAttribute('class','phase-label'); t.setAttribute('text-anchor','middle');
+      t.textContent = i || 1;
+      svg.appendChild(t);
+    }
+  }
+
+  // BBT scatter — body temp dots one per day, around inner ring
+  for (let i = 0; i < 28; i++){
+    const deg = (i/28)*360;
+    // simulate temp: low follicular, spike at ovulation, elevated luteal
+    let temp;
+    if (i < 13) temp = 36.4 + Math.sin(i*0.4)*0.05;
+    else if (i < 16) temp = 36.55 + (i-13)*0.08;
+    else temp = 36.8 + Math.sin((i-16)*0.5)*0.06 - (i>24?0.05*(i-24):0);
+    const r = 70 + (temp - 36.3) * 80;
+    const [x,y] = polar(r, deg);
+    const c = document.createElementNS(ns,'circle');
+    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', i===13?5:3);
+    c.setAttribute('fill', i===13 ? '#B8704A' : 'rgba(22,19,16,.65)');
+    svg.appendChild(c);
+  }
+
+  // Connecting BBT line
+  let d = '';
+  for (let i = 0; i < 28; i++){
+    const deg = (i/28)*360;
+    let temp;
+    if (i < 13) temp = 36.4 + Math.sin(i*0.4)*0.05;
+    else if (i < 16) temp = 36.55 + (i-13)*0.08;
+    else temp = 36.8 + Math.sin((i-16)*0.5)*0.06 - (i>24?0.05*(i-24):0);
+    const r = 70 + (temp - 36.3) * 80;
+    const [x,y] = polar(r, deg);
+    d += (i===0?'M':'L') + x + ',' + y;
+  }
+  d += ' Z';
+  const ln = document.createElementNS(ns,'path');
+  ln.setAttribute('d', d); ln.setAttribute('stroke','#4A4A36'); ln.setAttribute('stroke-width',1.2); ln.setAttribute('fill','none'); ln.setAttribute('opacity',.5);
+  svg.appendChild(ln);
+
+  // Phase labels
+  phases.forEach(p => {
+    const mid = ((p.start + p.end)/2/28)*360;
+    const [tx,ty] = polar(230, mid);
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x',tx); t.setAttribute('y',ty); t.setAttribute('class','phase-label'); t.setAttribute('text-anchor','middle');
+    t.textContent = p.name;
+    svg.appendChild(t);
+  });
+
+  // Center
+  const centerText = document.createElementNS(ns,'text');
+  centerText.setAttribute('x',cx); centerText.setAttribute('y',cy-6); centerText.setAttribute('text-anchor','middle');
+  centerText.setAttribute('font-family','Fraunces, serif'); centerText.setAttribute('font-weight','300'); centerText.setAttribute('font-size','42');
+  centerText.setAttribute('fill','#161310'); centerText.textContent = 'Day 14';
+  svg.appendChild(centerText);
+  const centerSub = document.createElementNS(ns,'text');
+  centerSub.setAttribute('x',cx); centerSub.setAttribute('y',cy+18); centerSub.setAttribute('text-anchor','middle');
+  centerSub.setAttribute('class','phase-label');
+  centerSub.textContent = 'OVULATORY';
+  svg.appendChild(centerSub);
+})();
+
+// LONGEVITY TRAJECTORY — cardio age vs chrono age, 30→70
+(function trajectory(){
+  const svg = document.getElementById('traj-svg');
+  const ns = 'http://www.w3.org/2000/svg';
+  const W = 700, H = 360, padL = 40, padR = 20, padT = 30, padB = 40;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+
+  // x: age 30..70, y: VO2max 20..55
+  function x(age){ return padL + ((age-30)/40)*innerW; }
+  function y(v){ return padT + (1 - (v-20)/35)*innerH; }
+
+  // Population baseline — declining VO2max with age
+  let pop = '';
+  for (let a = 30; a <= 70; a += 0.5){
+    const v = 45 - (a - 30) * 0.55 - Math.pow(Math.max(0,(a-50)/15),2)*4;
+    pop += (a===30?'M':'L') + x(a) + ',' + y(v);
+  }
+  // Population area
+  let popArea = pop + ` L ${x(70)},${y(20)} L ${x(30)},${y(20)} Z`;
+  const popAreaP = document.createElementNS(ns,'path');
+  popAreaP.setAttribute('d', popArea); popAreaP.setAttribute('fill','rgba(232,221,203,.18)'); svg.appendChild(popAreaP);
+  const popP = document.createElementNS(ns,'path');
+  popP.setAttribute('d', pop); popP.setAttribute('stroke','rgba(232,221,203,.55)'); popP.setAttribute('stroke-width',1.5); popP.setAttribute('fill','none'); popP.setAttribute('stroke-dasharray','4 4');
+  svg.appendChild(popP);
+
+  // User trajectory — 47 today (age 41), projected stays higher
+  let user = '';
+  for (let a = 30; a <= 70; a += 0.5){
+    let v;
+    if (a <= 41){
+      v = 42 + (a - 30) * 0.5 + Math.sin(a*1.2)*0.6; // climbed via training
+    } else {
+      v = 47.5 - (a - 41) * 0.42 - Math.pow(Math.max(0,(a-58)/12),2)*3;
+    }
+    user += (a===30?'M':'L') + x(a) + ',' + y(v);
+  }
+  const userP = document.createElementNS(ns,'path');
+  userP.setAttribute('d', user); userP.setAttribute('stroke','#B8704A'); userP.setAttribute('stroke-width',2.4); userP.setAttribute('fill','none'); userP.setAttribute('stroke-linecap','round');
+  svg.appendChild(userP);
+  // Glow under
+  const userGlow = document.createElementNS(ns,'path');
+  userGlow.setAttribute('d', user); userGlow.setAttribute('stroke','#B8704A'); userGlow.setAttribute('stroke-width',6); userGlow.setAttribute('fill','none'); userGlow.setAttribute('opacity',.25); userGlow.setAttribute('stroke-linecap','round');
+  svg.insertBefore(userGlow, userP);
+
+  // "Today" marker at age 41
+  const todayX = x(41), todayY = y(47);
+  const vline = document.createElementNS(ns,'line');
+  vline.setAttribute('x1',todayX); vline.setAttribute('x2',todayX); vline.setAttribute('y1',padT); vline.setAttribute('y2',H-padB);
+  vline.setAttribute('stroke','rgba(232,221,203,.3)'); vline.setAttribute('stroke-dasharray','2 4'); vline.setAttribute('stroke-width',1);
+  svg.appendChild(vline);
+  const dot = document.createElementNS(ns,'circle');
+  dot.setAttribute('cx',todayX); dot.setAttribute('cy',todayY); dot.setAttribute('r',6); dot.setAttribute('fill','#B8704A');
+  dot.setAttribute('stroke','#0E141B'); dot.setAttribute('stroke-width',2);
+  svg.appendChild(dot);
+  const dotLabel = document.createElementNS(ns,'text');
+  dotLabel.setAttribute('x',todayX+12); dotLabel.setAttribute('y',todayY-8);
+  dotLabel.setAttribute('font-family','Fraunces, serif'); dotLabel.setAttribute('font-size','16'); dotLabel.setAttribute('fill','#E8DDCB'); dotLabel.setAttribute('font-style','italic');
+  dotLabel.textContent = 'today · 47 ml/kg/min';
+  svg.appendChild(dotLabel);
+
+  // Axis
+  [30,40,50,60,70].forEach(a => {
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x',x(a)); t.setAttribute('y',H-padB+18); t.setAttribute('text-anchor','middle'); t.setAttribute('class','traj-axis');
+    t.textContent = a; svg.appendChild(t);
+  });
+  [25,35,45,55].forEach(v => {
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x', padL-8); t.setAttribute('y', y(v)+3); t.setAttribute('text-anchor','end'); t.setAttribute('class','traj-axis');
+    t.textContent = v; svg.appendChild(t);
+  });
+  const xLbl = document.createElementNS(ns,'text');
+  xLbl.setAttribute('x', W/2); xLbl.setAttribute('y', H-4); xLbl.setAttribute('text-anchor','middle'); xLbl.setAttribute('class','traj-axis');
+  xLbl.textContent = 'AGE'; svg.appendChild(xLbl);
+  const yLbl = document.createElementNS(ns,'text');
+  yLbl.setAttribute('x', 8); yLbl.setAttribute('y', 14); yLbl.setAttribute('class','traj-axis');
+  yLbl.textContent = 'VO₂ MAX (ml/kg/min)'; svg.appendChild(yLbl);
+})();
+
+// Chapter in-view
+const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('in-view', e.isIntersecting)), { threshold: 0.4 });
+document.querySelectorAll('.chapter').forEach(c => io.observe(c));
+
+// Name reveal
+const nm = document.getElementById('nm');
+document.getElementById('nameInput').addEventListener('input', e => {
+  nm.textContent = e.target.value.trim() || 'you';
+});
+</script>
+
 </body>
 </html>
