@@ -3,565 +3,954 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Ōura — Listen.</title>
+<title>Ōura — Drawing 01 · Ring 4 Assembly</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bone:#F2EBE0;
-    --bone-deep:#E8DDCB;
-    --ink:#161310;
-    --ink-soft:#3A332B;
-    --olive:#4A4A36;
+    --vellum:#EDE4CE;
+    --vellum-deep:#DDD0B0;
+    --vellum-pale:#F5EFDB;
+    --ink:#0F1A24;
+    --ink-soft:#3C4853;
+    --ink-faint:rgba(15,26,36,.42);
+    --red:#C1392B;
+    --red-deep:#8E2A20;
+    --teal:#1F5E5A;
     --copper:#B8704A;
-    --copper-bright:#D88A5C;
-    --night:#0E141B;
-    --rule:rgba(22,19,16,.12);
+    --grid:rgba(15,26,36,.05);
+    --grid-strong:rgba(15,26,36,.12);
+    --night:#0B1118;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:var(--bone);color:var(--ink);font-family:"Inter Tight",system-ui,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  body{font-size:16px;line-height:1.5;letter-spacing:-.005em}
-  ::selection{background:var(--copper);color:var(--bone)}
-  .serif{font-family:"Fraunces",Georgia,serif;font-weight:300;letter-spacing:-.02em}
-  .italic{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:300;color:var(--copper)}
-  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;letter-spacing:0}
+  html,body{
+    background:var(--vellum);
+    color:var(--ink);
+    font-family:"Inter Tight",system-ui,sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body{font-size:15px;line-height:1.55;letter-spacing:-.003em}
+  ::selection{background:var(--red);color:var(--vellum-pale)}
   a{color:inherit;text-decoration:none}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;letter-spacing:0;font-feature-settings:"ss01","ss02"}
+  .serif{font-family:"Fraunces",Georgia,serif;font-weight:300;letter-spacing:-.02em}
+  .italic{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:300}
 
+  /* ============ DRAFTING SHELL ============ */
+  /* Faint dot grid on every page */
+  body{
+    background-image:
+      radial-gradient(circle at 1px 1px, var(--grid-strong) 1px, transparent 0),
+      radial-gradient(circle at 1px 1px, var(--grid) 0.5px, transparent 0);
+    background-size: 96px 96px, 12px 12px;
+    background-position: 0 0, 0 0;
+  }
+  /* Subtle paper grain */
   body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:200;opacity:.06;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:200;opacity:.08;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .06 0 0 0 0 .10 0 0 0 0 .14 0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
-  /* NAV */
+  /* Corner crop marks — fixed page registration marks */
+  .crops{position:fixed;inset:18px;z-index:140;pointer-events:none}
+  .crops::before,.crops::after,.crops > i::before,.crops > i::after{
+    content:"";position:absolute;width:14px;height:14px;border:1px solid var(--ink);opacity:.55;
+  }
+  .crops::before{top:0;left:0;border-right:none;border-bottom:none}
+  .crops::after{top:0;right:0;border-left:none;border-bottom:none}
+  .crops > i{display:block}
+  .crops > i::before{bottom:0;left:0;border-right:none;border-top:none}
+  .crops > i::after{bottom:0;right:0;border-left:none;border-top:none}
+
+  /* Fine page rule — 1px outline */
+  .frame{position:fixed;inset:32px;z-index:135;pointer-events:none;border:1px solid rgba(15,26,36,.18)}
+
+  /* ============ NAV — title-block header strip ============ */
   nav{
-    position:fixed;top:0;left:0;right:0;z-index:150;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:22px 36px;
-    mix-blend-mode:difference;color:#fff;
-    font-size:13px;letter-spacing:.04em;
+    position:fixed;top:32px;left:32px;right:32px;z-index:150;
+    display:grid;grid-template-columns:auto 1fr auto auto;align-items:stretch;
+    height:42px;
+    background:var(--vellum-pale);
+    border-bottom:1px solid var(--ink);
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
   }
-  nav .mark{font-family:"Fraunces",serif;font-weight:300;font-size:22px;letter-spacing:.18em}
-  nav ul{display:flex;gap:36px;list-style:none}
-  nav ul a{opacity:.85;transition:opacity .3s}
-  nav ul a:hover{opacity:1}
-  nav .cta{border:1px solid rgba(255,255,255,.4);padding:8px 18px;border-radius:999px;transition:all .3s}
-  nav .cta:hover{background:#fff;color:#000;border-color:#fff}
+  nav .cell{display:flex;align-items:center;padding:0 16px;border-right:1px solid var(--ink-faint);gap:10px;white-space:nowrap}
+  nav .cell:last-child{border-right:none}
+  nav .mark{font-family:"Fraunces",serif;font-weight:300;font-size:18px;letter-spacing:.32em;text-transform:none}
+  nav .mark .bar{display:inline-block;width:1px;height:14px;background:var(--ink);margin:0 4px;opacity:.6;vertical-align:middle}
+  nav ul{display:flex;list-style:none;gap:0;height:100%}
+  nav ul li{display:flex;align-items:center;padding:0 14px;border-right:1px solid var(--ink-faint)}
+  nav ul li:last-child{border-right:none}
+  nav ul a{opacity:.7;transition:opacity .2s}
+  nav ul a:hover{opacity:1;color:var(--red)}
+  nav .cta{background:var(--ink);color:var(--vellum-pale);display:flex;align-items:center;padding:0 18px;gap:8px;transition:background .2s}
+  nav .cta:hover{background:var(--red)}
+  nav .live{color:var(--red);display:flex;align-items:center;gap:8px}
+  nav .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.6s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* 3D RING CANVAS — persistent across hero */
-  #ring-canvas{
-    position:fixed;top:0;right:0;width:55vw;height:100vh;z-index:5;pointer-events:none;
-    transition:opacity 1s ease, transform 1s ease;
+  /* ============ SECTION SCAFFOLDING ============ */
+  section{position:relative;padding:120px 64px 96px;border-bottom:1px solid var(--ink-faint)}
+  section:first-of-type{padding-top:120px}
+  /* Sheet stamp — top-right of every section */
+  .sheet-stamp{
+    position:absolute;top:96px;right:64px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:right;line-height:1.6;
   }
-  body.past-hero #ring-canvas{opacity:0;transform:translateY(-10vh) scale(.7)}
-
-  /* HERO */
-  .hero{
-    min-height:100vh;position:relative;display:grid;grid-template-columns:1.1fr .9fr;
-    align-items:center;padding:0 8vw;gap:4vw;overflow:hidden;
-    background:radial-gradient(ellipse at 70% 50%, #EFE2D0 0%, var(--bone) 55%, var(--bone-deep) 100%);
+  .sheet-stamp b{color:var(--ink);font-weight:600}
+  /* Section title — left side */
+  .sheet-title{margin-bottom:48px}
+  .sheet-title .num{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;color:var(--red);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  .sheet-title .num::before{content:"";width:32px;height:1px;background:var(--red)}
+  .sheet-title h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(36px,4.4vw,68px);line-height:1.02;letter-spacing:-.03em;max-width:14ch}
+  .sheet-title h2 em{font-family:"Fraunces",serif;font-style:italic;font-weight:300;color:var(--red)}
+  /* Title block — bottom-right of each section */
+  .title-block{
+    position:absolute;bottom:32px;right:64px;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    border:1px solid var(--ink);min-width:520px;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    background:var(--vellum-pale);
   }
-  .hero-text{position:relative;z-index:10}
-  .eyebrow{display:flex;align-items:center;gap:12px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:32px;opacity:0;animation:rise .9s .2s forwards}
-  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--copper);box-shadow:0 0 0 0 var(--copper);animation:pulse 2.4s infinite}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(184,112,74,.5)}50%{box-shadow:0 0 0 12px rgba(184,112,74,0)}}
-  h1.headline{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(44px, 5.4vw, 84px);line-height:.98;letter-spacing:-.03em;color:var(--ink)}
-  h1.headline .line{display:block;overflow:hidden}
-  h1.headline .line > span{display:inline-block;transform:translateY(110%);opacity:0;animation:rise 1.1s cubic-bezier(.2,.7,.2,1) forwards}
-  h1.headline .line:nth-child(2) > span{animation-delay:.18s}
-  h1.headline .line:nth-child(3) > span{animation-delay:.36s}
-  @keyframes rise{to{transform:translateY(0);opacity:1}}
-  .sub{max-width:440px;margin-top:36px;font-size:18px;color:var(--ink-soft);line-height:1.55;opacity:0;animation:rise 1s .7s forwards}
-  .hero-meta{margin-top:56px;display:flex;gap:48px;opacity:0;animation:rise 1s .9s forwards}
-  .hero-meta div{display:flex;flex-direction:column;gap:4px}
-  .hero-meta .n{font-family:"Fraunces",serif;font-size:32px;font-weight:300;letter-spacing:-.02em}
-  .hero-meta .l{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .title-block .b{padding:8px 12px;border-right:1px solid var(--ink-faint);border-bottom:1px solid var(--ink-faint);display:flex;flex-direction:column;gap:3px;min-height:50px;justify-content:center}
+  .title-block .b:nth-child(4n){border-right:none}
+  .title-block .b:nth-last-child(-n+4){border-bottom:none}
+  .title-block .b .l{opacity:.55;font-size:9px;letter-spacing:.14em}
+  .title-block .b .v{font-size:11px;color:var(--ink);font-weight:500;letter-spacing:.06em}
 
-  /* live multi-metric ribbon */
-  .ribbon{position:absolute;left:8vw;right:8vw;bottom:5vh;z-index:10;opacity:0;animation:rise 1s 1.2s forwards}
-  .ribbon-label{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
-  .ribbon-label .live{color:var(--copper);display:inline-flex;align-items:center;gap:6px}
-  .ribbon-label .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--copper);animation:pulse 2s infinite}
-  .ribbon svg{width:100%;height:80px;display:block}
+  /* ============ HERO ============ */
+  .hero{min-height:100vh;padding:140px 64px 200px;display:grid;grid-template-columns:1fr;gap:48px;align-items:start}
+  .hero-head{display:grid;grid-template-columns:.7fr 1.3fr;gap:64px;align-items:end;padding-bottom:48px;border-bottom:1px solid var(--ink-faint)}
+  .hero-eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:10px}
+  .hero-eyebrow .row{display:flex;gap:10px;align-items:center}
+  .hero-eyebrow .red{color:var(--red)}
+  .hero-eyebrow .red::before{content:"●";margin-right:6px}
+  h1.headline{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(54px,8vw,128px);line-height:.94;letter-spacing:-.04em;color:var(--ink)}
+  h1.headline em{font-family:"Fraunces",serif;font-style:italic;font-weight:300;color:var(--red)}
+  h1.headline .ruled{position:relative;display:inline-block}
+  h1.headline .ruled::after{content:"";position:absolute;left:0;right:0;bottom:.08em;border-bottom:1px solid var(--red);opacity:.5}
 
-  /* CHAPTERS */
-  .chapters{position:relative;z-index:20}
-  .chapter{
-    min-height:100vh;padding:14vh 8vw;display:grid;grid-template-columns:.85fr 1.15fr;gap:6vw;align-items:center;
-    position:relative;transition:background 1.2s ease, color 1.2s ease;
-  }
-  .chapter .meta{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.6;margin-bottom:24px}
-  .chapter h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(36px,4.6vw,72px);line-height:1.02;letter-spacing:-.03em;margin-bottom:28px}
-  .chapter p{font-size:17px;line-height:1.55;max-width:460px;opacity:.85}
-  .chapter .stats-row{margin-top:32px;display:flex;gap:32px}
-  .chapter .stats-row > div{display:flex;flex-direction:column;gap:4px}
-  .chapter .stats-row .n{font-family:"Fraunces",serif;font-size:28px;font-weight:300}
-  .chapter .stats-row .l{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
+  .hero-body{display:grid;grid-template-columns:.42fr 1.16fr .42fr;gap:48px;align-items:start}
+  .col-left, .col-right{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.04em;line-height:1.7}
+  .col-left .label, .col-right .label{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--ink-faint);display:flex;justify-content:space-between}
+  .col-left .label .n, .col-right .label .n{color:var(--red);font-weight:600}
+  .col-left ul, .col-right ul{list-style:none;margin-bottom:28px}
+  .col-left li, .col-right li{display:grid;grid-template-columns:24px 1fr auto;gap:8px;padding:5px 0;border-bottom:1px dotted var(--ink-faint);align-items:baseline}
+  .col-left li .id, .col-right li .id{color:var(--red);font-weight:600}
+  .col-left li .v, .col-right li .v{color:var(--ink-soft);font-size:10px;text-align:right}
+  .blurb{margin-top:24px;font-family:"Inter Tight",sans-serif;font-size:13px;letter-spacing:0;line-height:1.5;color:var(--ink-soft);text-transform:none;max-width:36ch}
+  .blurb b{color:var(--ink);font-weight:500}
 
-  /* SLEEP */
-  #sleep{background:linear-gradient(180deg,var(--bone) 0%,#1F2A3A 22%,#0E141B 100%);color:#E8DDCB}
-  #sleep .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#fff8,transparent),radial-gradient(1.5px 1.5px at 45% 80%,#fff6,transparent),radial-gradient(1px 1px at 85% 20%,#fff,transparent),radial-gradient(1px 1px at 15% 70%,#fff7,transparent);opacity:.5;pointer-events:none}
-  .hypnogram{position:relative;width:100%}
-  .hypnogram svg{width:100%;height:auto;display:block}
-  .axis-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1px;fill:rgba(232,221,203,.5)}
-  .stage-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1px;fill:rgba(232,221,203,.6)}
+  /* ===== AXONOMETRIC RING DRAWING ===== */
+  .ring-drawing{position:relative;display:flex;justify-content:center;align-items:center;min-height:680px}
+  .ring-drawing svg{width:100%;max-width:760px;height:auto;display:block;overflow:visible}
+  .draft-line{stroke:var(--ink);stroke-width:1;fill:none}
+  .draft-line.dashed{stroke-dasharray:4 3}
+  .draft-line.dotted{stroke-dasharray:1 3}
+  .leader{stroke:var(--ink);stroke-width:.7;fill:none}
+  .leader.red{stroke:var(--red);stroke-width:1}
+  .callout-circle{fill:var(--vellum-pale);stroke:var(--ink);stroke-width:1}
+  .callout-num{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+  .dim-text{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;fill:var(--ink-soft)}
+  .ring-fill{fill:var(--vellum-deep);stroke:var(--ink);stroke-width:1.2}
+  .ring-band{fill:#C9B89A;stroke:var(--ink);stroke-width:1.2}
+  .ring-shadow{fill:rgba(15,26,36,.16)}
+  .ring-highlight{fill:none;stroke:var(--vellum-pale);stroke-width:.8;opacity:.6}
+  .sensor-fill{fill:var(--night)}
+  .sensor-led-r{fill:var(--red)}
+  .sensor-led-g{fill:#3AA66E}
+  .sensor-led-ir{fill:#5A4A6E}
+  .hatch{fill:url(#hatch)}
+  .grid-faint{stroke:var(--grid-strong);stroke-width:.5;fill:none}
 
-  /* RECOVERY */
-  #recovery{background:linear-gradient(180deg,#0E141B 0%,#3A2A30 18%,#E8C9B0 60%,#F2EBE0 100%);color:var(--ink)}
-  .heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;width:100%;max-width:520px}
-  .heatmap .cell{aspect-ratio:1;border-radius:6px;background:rgba(22,19,16,.06);position:relative;transition:transform .3s}
-  .heatmap .cell.lvl-1{background:rgba(184,112,74,.18)}
-  .heatmap .cell.lvl-2{background:rgba(184,112,74,.35)}
-  .heatmap .cell.lvl-3{background:rgba(184,112,74,.55)}
-  .heatmap .cell.lvl-4{background:rgba(184,112,74,.75)}
-  .heatmap .cell.lvl-5{background:#B8704A}
-  .heatmap .cell:hover{transform:scale(1.15);z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-  .heatmap .cell .v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:9px;color:var(--ink);opacity:0}
-  .heatmap .cell:hover .v{opacity:1}
-  .gauge{width:240px;height:240px;position:relative}
-  .gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
-  .gauge .track{fill:none;stroke:rgba(22,19,16,.08);stroke-width:10}
-  .gauge .arc{fill:none;stroke:var(--copper);stroke-linecap:round;stroke-width:10;stroke-dasharray:534;stroke-dashoffset:534;transition:stroke-dashoffset 2.4s cubic-bezier(.2,.8,.2,1)}
-  #recovery.in-view .gauge .arc{stroke-dashoffset:90}
-  .gauge .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .gauge .score{font-family:"Fraunces",serif;font-size:72px;font-weight:300;line-height:1}
-  .gauge .lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;opacity:.6;margin-top:4px}
+  /* ===== HERO RIBBON / LIVE TRACE ===== */
+  .live-trace{margin-top:48px;padding:18px 24px;background:var(--vellum-pale);border:1px solid var(--ink);position:relative}
+  .live-trace .head{display:flex;justify-content:space-between;align-items:center;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .live-trace .head .live{color:var(--red);display:flex;align-items:center;gap:8px}
+  .live-trace .head .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.6s infinite}
+  .live-trace svg{width:100%;height:90px;display:block}
+
+  /* ============ CHAPTERS ============ */
+  .chapter{padding:140px 64px 200px;position:relative;border-bottom:1px solid var(--ink-faint)}
+  .chapter-body{display:grid;grid-template-columns:.85fr 1.15fr;gap:80px;align-items:start;margin-top:56px}
+  .chapter-body p{font-size:16px;line-height:1.55;color:var(--ink);max-width:48ch;margin-bottom:24px}
+  .chapter-body .lede{font-family:"Fraunces",serif;font-weight:300;font-size:22px;line-height:1.35;letter-spacing:-.01em;color:var(--ink);margin-bottom:20px}
+  .spec-table{margin-top:32px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+  .spec-table .row{display:grid;grid-template-columns:1fr auto;padding:8px 0;border-bottom:1px dotted var(--ink-faint);gap:12px}
+  .spec-table .row .l{color:var(--ink-soft);font-size:10px;letter-spacing:.16em}
+  .spec-table .row .v{color:var(--ink);font-weight:500}
+  .spec-table .row .v em{color:var(--red);font-style:normal}
+
+  /* SLEEP — oscilloscope hypnogram */
+  .scope{background:var(--vellum-pale);border:1px solid var(--ink);position:relative;padding:18px 22px 24px}
+  .scope .scope-head{display:flex;justify-content:space-between;align-items:flex-end;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--ink-faint)}
+  .scope .scope-head b{color:var(--ink);font-weight:600;font-size:12px;letter-spacing:.12em}
+  .scope svg{width:100%;height:auto;display:block}
+  .scope-tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:18px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .scope-tags .sw{display:inline-block;width:14px;height:6px;vertical-align:middle;margin-right:6px;border:1px solid var(--ink)}
+
+  /* RECOVERY — dial + thermal plate */
   .recovery-grid{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:start}
+  .dial{width:260px;height:260px;position:relative;background:var(--vellum-pale);border:1px solid var(--ink);border-radius:50%}
+  .dial svg{width:100%;height:100%}
+  .dial .arc{fill:none;stroke:var(--red);stroke-linecap:butt;stroke-width:14;stroke-dasharray:534;stroke-dashoffset:534;transition:stroke-dashoffset 2.4s cubic-bezier(.2,.8,.2,1)}
+  .recovery.in-view .dial .arc{stroke-dashoffset:120}
+  .dial .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .dial .score{font-family:"Fraunces",serif;font-size:80px;font-weight:300;line-height:1;letter-spacing:-.03em}
+  .dial .lbl{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-top:6px}
+  .dial .small{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.12em;color:var(--ink-soft);margin-top:2px}
+  .thermal{background:var(--vellum-pale);border:1px solid var(--ink);padding:16px 20px 20px;position:relative}
+  .thermal .head{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--ink-faint)}
+  .thermal .head b{color:var(--ink);font-weight:600}
+  .heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .heatmap .cell{aspect-ratio:1;border:1px solid var(--ink-faint);position:relative;font-family:"JetBrains Mono",monospace;font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:transform .2s}
+  .heatmap .cell.lvl-0{background:var(--vellum-pale);color:var(--ink-soft)}
+  .heatmap .cell.lvl-1{background:#E8D4B8;color:var(--ink-soft)}
+  .heatmap .cell.lvl-2{background:#D8AC8A;color:var(--ink)}
+  .heatmap .cell.lvl-3{background:#C58A6E;color:var(--vellum-pale)}
+  .heatmap .cell.lvl-4{background:var(--red);color:var(--vellum-pale)}
+  .heatmap .cell.lvl-5{background:var(--red-deep);color:var(--vellum-pale)}
+  .heatmap .cell:hover{outline:1px solid var(--ink);z-index:2;transform:scale(1.08)}
+  .heatmap-legend{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .heatmap-legend .scale{display:flex;gap:2px}
+  .heatmap-legend .scale span{width:14px;height:8px;border:1px solid var(--ink-faint);display:block}
 
-  /* RHYTHM */
-  #rhythm{background:linear-gradient(180deg,#F2EBE0 0%,#EFE2D0 100%);color:var(--ink)}
-  .cycle-wheel{width:100%;max-width:540px;aspect-ratio:1;position:relative}
-  .cycle-wheel svg{width:100%;height:100%}
-  .phase-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1.5px;fill:var(--ink-soft);text-transform:uppercase}
+  /* RHYTHM — polar drafting */
+  .polar{background:var(--vellum-pale);border:1px solid var(--ink);padding:24px;display:flex;justify-content:center;align-items:center;position:relative}
+  .polar svg{width:100%;max-width:540px;height:auto;display:block}
+  .polar-corner{position:absolute;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .polar-corner.tl{top:14px;left:18px}
+  .polar-corner.tr{top:14px;right:18px;text-align:right}
+  .polar-corner.bl{bottom:14px;left:18px}
+  .polar-corner.br{bottom:14px;right:18px;text-align:right}
+  .polar-corner b{color:var(--red)}
 
-  /* LONGEVITY */
-  #longevity{background:linear-gradient(180deg,#EFE2D0 0%,#544738 60%,#1A1814 100%);color:#E8DDCB}
-  .trajectory{width:100%;max-width:680px}
-  .trajectory svg{width:100%;height:auto;display:block}
-  .traj-axis{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:1px;fill:rgba(232,221,203,.5)}
-  .traj-legend{display:flex;gap:24px;margin-top:24px;font-size:12px;letter-spacing:.1em}
-  .traj-legend .swatch{display:inline-block;width:24px;height:2px;vertical-align:middle;margin-right:8px}
+  /* LONGEVITY — graph */
+  #longevity{background:var(--night);color:var(--vellum-pale);border-color:rgba(245,239,219,.1)}
+  #longevity{background-image:
+    radial-gradient(circle at 1px 1px, rgba(245,239,219,.07) 1px, transparent 0),
+    radial-gradient(circle at 1px 1px, rgba(245,239,219,.03) 0.5px, transparent 0);
+    background-size: 96px 96px, 12px 12px;}
+  #longevity .sheet-stamp{color:rgba(245,239,219,.55)}
+  #longevity .sheet-stamp b{color:var(--vellum-pale)}
+  #longevity .sheet-title .num{color:#E48A78}
+  #longevity .sheet-title .num::before{background:#E48A78}
+  #longevity h2{color:var(--vellum-pale)}
+  #longevity h2 em{color:#E48A78}
+  #longevity p, #longevity .chapter-body p{color:#C9C0A6}
+  #longevity .lede{color:var(--vellum-pale)}
+  #longevity .spec-table .row{border-color:rgba(245,239,219,.12)}
+  #longevity .spec-table .row .l{color:#8E8775}
+  #longevity .spec-table .row .v{color:var(--vellum-pale)}
+  #longevity .title-block{background:var(--night);border-color:rgba(245,239,219,.3)}
+  #longevity .title-block .b{border-color:rgba(245,239,219,.15)}
+  #longevity .title-block .b .l{color:#8E8775}
+  #longevity .title-block .b .v{color:var(--vellum-pale)}
+  .traj{background:rgba(245,239,219,.03);border:1px solid rgba(245,239,219,.2);padding:24px}
+  .traj .head{display:flex;justify-content:space-between;align-items:flex-end;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,239,219,.6);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(245,239,219,.15)}
+  .traj .head b{color:var(--vellum-pale);font-weight:600;font-size:12px;letter-spacing:.12em}
+  .traj svg{width:100%;height:auto;display:block}
+  .traj-legend{display:flex;gap:24px;margin-top:18px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#C9C0A6}
+  .traj-legend .sw{display:inline-block;width:20px;height:1.5px;vertical-align:middle;margin-right:8px}
 
-  /* NAME REVEAL */
-  .reveal{min-height:90vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8vw;background:#0E141B;color:#E8DDCB;text-align:center;position:relative;overflow:hidden;z-index:20}
-  .reveal::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 40%, rgba(184,112,74,.18) 0%, transparent 50%)}
-  .reveal h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(48px,6vw,92px);line-height:1.05;letter-spacing:-.03em;max-width:18ch}
-  .reveal h2 .name{font-style:italic;color:var(--copper);border-bottom:1px solid rgba(184,112,74,.4);padding-bottom:4px}
-  .reveal input{margin-top:48px;background:transparent;border:none;border-bottom:1px solid rgba(232,221,203,.3);color:#E8DDCB;font-family:"Fraunces",serif;font-size:24px;text-align:center;padding:12px 8px;width:280px;outline:none;transition:border-color .3s}
-  .reveal input:focus{border-color:var(--copper)}
-  .reveal .hint{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.5;margin-top:14px}
+  /* ============ REVEAL ============ */
+  .reveal{
+    min-height:80vh;padding:140px 64px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+    background:var(--vellum-pale);position:relative;border-bottom:1px solid var(--ink-faint);
+  }
+  .reveal .stamp{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+  .reveal .stamp::before, .reveal .stamp::after{content:"";width:32px;height:1px;background:var(--red)}
+  .reveal h2{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(44px,5.4vw,84px);line-height:1.04;letter-spacing:-.03em;max-width:22ch}
+  .reveal h2 .name{font-family:"Fraunces",serif;font-style:italic;color:var(--red);position:relative;display:inline-block}
+  .reveal h2 .name::after{content:"";position:absolute;left:0;right:0;bottom:-2px;border-bottom:1px dashed var(--red);opacity:.5}
+  .reveal input{
+    margin-top:48px;background:transparent;border:none;border-bottom:1px solid var(--ink);color:var(--ink);
+    font-family:"Fraunces",serif;font-size:28px;font-style:italic;font-weight:300;
+    text-align:center;padding:8px 16px;width:320px;outline:none;transition:border-color .2s;
+  }
+  .reveal input:focus{border-color:var(--red)}
+  .reveal .hint{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-top:14px}
 
-  /* MEMBERSHIP */
-  .member{padding:14vh 8vw;background:var(--bone);display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:center;z-index:20;position:relative}
-  .member .col h3{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(36px,4.4vw,64px);line-height:1.02;letter-spacing:-.03em;margin-bottom:24px}
-  .member .col p{font-size:17px;line-height:1.6;color:var(--ink-soft);max-width:460px;margin-bottom:32px}
-  .card{aspect-ratio:1.586;border-radius:20px;padding:32px;color:#F2EBE0;background:linear-gradient(135deg,#1A1814 0%,#3A332B 50%,#544738 100%);box-shadow:0 40px 80px -20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transform:rotate(-2deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
-  .card:hover{transform:rotate(0) translateY(-4px)}
-  .card::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,220,180,.18) 50%,transparent 70%);transform:translateX(-100%);transition:transform 1.2s}
-  .card:hover::before{transform:translateX(100%)}
-  .card .top{display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.7}
-  .card .mid{font-family:"Fraunces",serif;font-size:48px;font-weight:300;letter-spacing:-.02em;line-height:1}
-  .card .mid em{font-style:italic;color:var(--copper)}
-  .card .bot{display:flex;justify-content:space-between;align-items:flex-end;font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+  /* ============ MEMBERSHIP ============ */
+  .member{padding:140px 64px;background:var(--vellum);display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:center;border-bottom:1px solid var(--ink-faint);position:relative}
+  .member h3{font-family:"Fraunces",serif;font-weight:300;font-size:clamp(36px,4.2vw,60px);line-height:1.04;letter-spacing:-.03em;margin-bottom:24px}
+  .member h3 em{font-family:"Fraunces",serif;font-style:italic;color:var(--red)}
+  .member p{font-size:16px;line-height:1.55;color:var(--ink);max-width:46ch;margin-bottom:20px}
+  .member .micro{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .spec-card{
+    background:var(--vellum-pale);border:1px solid var(--ink);padding:0;
+    aspect-ratio:1.586;display:grid;grid-template-rows:auto 1fr auto;
+    font-family:"JetBrains Mono",monospace;color:var(--ink);
+    box-shadow:8px 8px 0 var(--ink);transform:rotate(-1.4deg);transition:transform .4s cubic-bezier(.2,.8,.2,1);
+    position:relative;overflow:hidden;
+  }
+  .spec-card:hover{transform:rotate(0deg) translate(-3px,-3px);box-shadow:11px 11px 0 var(--ink)}
+  .spec-card .sc-head{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--ink);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .spec-card .sc-head .l, .spec-card .sc-head .r{padding:10px 16px}
+  .spec-card .sc-head .l{border-right:1px solid var(--ink)}
+  .spec-card .sc-head .r{color:var(--red)}
+  .spec-card .sc-body{padding:24px 24px 14px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+  .spec-card .sc-mark{font-family:"Fraunces",serif;font-weight:300;font-size:54px;line-height:.95;letter-spacing:-.03em}
+  .spec-card .sc-mark em{font-family:"Fraunces",serif;font-style:italic;color:var(--red)}
+  .spec-card .sc-rows{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10px;letter-spacing:.06em}
+  .spec-card .sc-rows .k{color:var(--ink-soft);font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:2px}
+  .spec-card .sc-rows .v{font-size:14px;font-family:"Fraunces",serif;letter-spacing:-.01em}
+  .spec-card .sc-foot{display:grid;grid-template-columns:1fr auto;border-top:1px solid var(--ink);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+  .spec-card .sc-foot .l, .spec-card .sc-foot .r{padding:10px 16px}
+  .spec-card .sc-foot .l{border-right:1px solid var(--ink)}
+  .ring-glyph{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid var(--red);vertical-align:middle;margin-right:8px}
 
-  footer{background:#0E141B;color:#A89A85;padding:80px 8vw 40px;position:relative;z-index:20}
-  footer .top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:60px;border-bottom:1px solid rgba(232,221,203,.08)}
-  footer h4{font-family:"Fraunces",serif;font-weight:300;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#E8DDCB;margin-bottom:16px}
-  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px}
-  footer .made{font-family:"Fraunces",serif;font-size:32px;font-weight:300;font-style:italic;line-height:1.2;color:#E8DDCB;max-width:18ch}
-  footer .made small{display:block;font-style:normal;font-family:"Inter Tight",sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#A89A85;margin-top:14px}
-  footer .bot{display:flex;justify-content:space-between;align-items:center;padding-top:32px;font-size:12px;letter-spacing:.04em}
-  footer .ring-small{display:inline-block;width:18px;height:18px;border-radius:50%;border:2px solid #B8704A;vertical-align:middle;margin-right:8px}
+  /* ============ FOOTER ============ */
+  footer{background:var(--night);color:#A89A85;padding:80px 64px 40px;position:relative}
+  footer .top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;border-bottom:1px solid rgba(232,221,203,.1)}
+  footer h4{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--vellum-pale);margin-bottom:18px}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px}
+  footer .made{font-family:"Fraunces",serif;font-size:30px;font-weight:300;line-height:1.18;color:var(--vellum-pale);max-width:20ch}
+  footer .made em{font-style:italic;color:#E48A78}
+  footer .made small{display:block;font-style:normal;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#A89A85;margin-top:16px}
+  footer .bot{display:flex;justify-content:space-between;align-items:center;padding-top:28px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+  footer .bot .ring-small{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #E48A78;vertical-align:middle;margin-right:8px}
 
-  @media (max-width:880px){
-    .hero,.chapter,.member{grid-template-columns:1fr;padding-top:120px;padding-bottom:80px}
-    #ring-canvas{position:relative;width:100vw;height:60vh}
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:980px){
+    section, .chapter, .member, .reveal, footer{padding-left:32px;padding-right:32px}
+    nav{left:18px;right:18px;font-size:10px;height:38px}
     nav ul{display:none}
-    footer .top{grid-template-columns:1fr 1fr;gap:32px}
-    .recovery-grid{grid-template-columns:1fr}
+    .frame{inset:18px}
+    .crops{inset:10px}
+    .sheet-stamp{position:static;text-align:left;margin-bottom:24px}
+    .title-block{position:static;margin-top:48px;min-width:0}
+    .hero-head{grid-template-columns:1fr;gap:32px}
+    .hero-body{grid-template-columns:1fr;gap:32px}
+    .chapter-body{grid-template-columns:1fr;gap:48px}
+    .recovery-grid{grid-template-columns:1fr;gap:24px}
+    .member{grid-template-columns:1fr;gap:48px}
+    footer .top{grid-template-columns:1fr 1fr}
+    h1.headline{font-size:48px}
   }
 </style>
 </head>
 <body>
 
-<canvas id="ring-canvas"></canvas>
+<div class="crops"><i></i></div>
+<div class="frame"></div>
 
 <nav>
-  <div class="mark">ŌURA</div>
+  <div class="cell mark">Ō<span class="bar"></span>URA</div>
   <ul>
-    <li><a href="#sleep">Sleep</a></li>
-    <li><a href="#recovery">Recovery</a></li>
-    <li><a href="#rhythm">Rhythm</a></li>
-    <li><a href="#longevity">Longevity</a></li>
-    <li><a href="#">Shop</a></li>
+    <li><a href="#sleep">01 · Sleep</a></li>
+    <li><a href="#recovery">02 · Recovery</a></li>
+    <li><a href="#rhythm">03 · Rhythm</a></li>
+    <li><a href="#longevity">04 · Longevity</a></li>
   </ul>
-  <a class="cta" href="#">Begin</a>
+  <div class="cell live">Telemetry · 58 BPM</div>
+  <a class="cta" href="#">Begin Drawing → </a>
 </nav>
 
+<!-- ============ HERO / DRAWING 01 ============ -->
 <section class="hero">
-  <div class="hero-text">
-    <div class="eyebrow"><span class="dot"></span> Ōura Ring 4 — Titanium · 2.2g · 0.0 mm gap</div>
+  <div class="sheet-stamp">
+    <b>DRAWING 01 / 05</b><br/>
+    Ring 4 — Assembly<br/>
+    Sheet A — Plan + Section
+  </div>
+
+  <div class="hero-head">
+    <div class="hero-eyebrow">
+      <div class="row">Filed · Oulu, 67°N · 2026</div>
+      <div class="row red">Live telemetry — finger 4R · subject 0001</div>
+      <div class="row">Materials · Gr-5 Ti · 4N sapphire · DLC</div>
+    </div>
     <h1 class="headline">
-      <span class="line"><span>Your body has been</span></span>
-      <span class="line"><span>telling you <em class="italic">everything.</em></span></span>
-      <span class="line"><span>Ōura listens.</span></span>
+      Your body has been<br/>
+      telling you <em>everything.</em><br/>
+      <span class="ruled">Ōura listens.</span>
     </h1>
-    <p class="sub">A razor-thin titanium ring on your finger. 50+ biosignals, sampled 250 times a second, read into one quiet voice.</p>
-    <div class="hero-meta">
-      <div><div class="n">2.2<span style="font-size:.5em">g</span></div><div class="l">Titanium</div></div>
-      <div><div class="n">8<span style="font-size:.5em">d</span></div><div class="l">Battery</div></div>
-      <div><div class="n">250<span style="font-size:.5em">Hz</span></div><div class="l">Sample rate</div></div>
-      <div><div class="n">50+</div><div class="l">Signals</div></div>
+  </div>
+
+  <div class="hero-body">
+    <!-- LEFT: bill of materials -->
+    <div class="col-left">
+      <div class="label"><span>Bill of materials</span><span class="n">10 / 14</span></div>
+      <ul>
+        <li><span class="id">01</span><span>Photoplethysmography array</span><span class="v">PPG×3</span></li>
+        <li><span class="id">02</span><span>NTC thermistor, distal</span><span class="v">±0.01°</span></li>
+        <li><span class="id">03</span><span>Capillary spectrometer</span><span class="v">525nm</span></li>
+        <li><span class="id">04</span><span>Triaxial inertial cluster</span><span class="v">3-axis</span></li>
+        <li><span class="id">05</span><span>Vagal-tone resonator</span><span class="v">8 kHz</span></li>
+        <li><span class="id">06</span><span>NFC induction stator</span><span class="v">13.56 MHz</span></li>
+        <li><span class="id">07</span><span>Lithium-polymer cell</span><span class="v">22 mAh</span></li>
+        <li><span class="id">08</span><span>Sapphire optical window</span><span class="v">4N</span></li>
+        <li><span class="id">09</span><span>Titanium-DLC substrate</span><span class="v">Gr-5</span></li>
+        <li><span class="id">10</span><span>Skin conductance bridge</span><span class="v">2 µS</span></li>
+      </ul>
+      <div class="blurb">
+        <b>One ring. Fifty signals.</b> Each captured at the millisecond and read into a single quiet voice — the one that tells you when to push, when to rest, and when something is changing.
+      </div>
+    </div>
+
+    <!-- CENTER: axonometric ring drawing -->
+    <div class="ring-drawing">
+      <svg viewBox="-380 -360 760 720" id="ring-svg" aria-label="Axonometric exploded view, Ōura Ring 4">
+        <defs>
+          <pattern id="hatch" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(15,26,36,.5)" stroke-width=".7"/>
+          </pattern>
+          <pattern id="hatch-tight" patternUnits="userSpaceOnUse" width="3" height="3" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="3" stroke="rgba(15,26,36,.4)" stroke-width=".5"/>
+          </pattern>
+          <linearGradient id="bandGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="#E0CFB0"/>
+            <stop offset=".5" stop-color="#C9B89A"/>
+            <stop offset="1" stop-color="#A89476"/>
+          </linearGradient>
+          <linearGradient id="innerGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="#8A7960"/>
+            <stop offset="1" stop-color="#5A4A3A"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Background reference grid (cross) -->
+        <line class="grid-faint" x1="-340" y1="0" x2="340" y2="0"/>
+        <line class="grid-faint" x1="0" y1="-320" x2="0" y2="300"/>
+        <!-- Center mark -->
+        <circle cx="0" cy="0" r="4" fill="none" stroke="var(--ink)" stroke-width=".5"/>
+        <line x1="-8" y1="0" x2="8" y2="0" stroke="var(--ink)" stroke-width=".5"/>
+        <line x1="0" y1="-8" x2="0" y2="8" stroke="var(--ink)" stroke-width=".5"/>
+
+        <!-- ===== UPPER ASSEMBLY (lifted, exploded above) ===== -->
+        <g transform="translate(0,-130)">
+          <!-- Vertical guide between halves -->
+          <line class="draft-line dashed" x1="0" y1="60" x2="0" y2="170" />
+
+          <!-- Outer band — axonometric ellipse, top of ring -->
+          <ellipse cx="0" cy="0" rx="220" ry="78" fill="url(#bandGrad)" stroke="var(--ink)" stroke-width="1.2"/>
+          <!-- Inner finger hole -->
+          <ellipse cx="0" cy="0" rx="155" ry="52" fill="var(--vellum-deep)" stroke="var(--ink)" stroke-width="1"/>
+          <ellipse cx="0" cy="-2" rx="155" ry="52" fill="none" stroke="var(--vellum-pale)" stroke-width=".8" opacity=".7"/>
+          <!-- Inner shadow ring -->
+          <ellipse cx="0" cy="2" rx="155" ry="52" fill="none" stroke="rgba(15,26,36,.35)" stroke-width="1"/>
+          <!-- Top highlight curve -->
+          <path d="M -200 -14 Q -100 -52 0 -54 Q 100 -52 200 -14" fill="none" stroke="var(--vellum-pale)" stroke-width="1.4" opacity=".85"/>
+          <!-- Subtle outer edge highlight -->
+          <ellipse cx="0" cy="-1.5" rx="220" ry="78" fill="none" stroke="rgba(255,250,235,.4)" stroke-width=".6"/>
+        </g>
+
+        <!-- ===== LOWER ASSEMBLY (sensors + battery, exploded below) ===== -->
+        <g transform="translate(0,130)">
+          <!-- Inner sensor ring substrate -->
+          <ellipse cx="0" cy="0" rx="210" ry="74" fill="var(--night)" stroke="var(--ink)" stroke-width="1.2"/>
+          <!-- Inner cutout -->
+          <ellipse cx="0" cy="0" rx="148" ry="50" fill="var(--vellum-deep)" stroke="var(--ink)" stroke-width="1"/>
+          <ellipse cx="0" cy="-2" rx="148" ry="50" fill="none" stroke="rgba(255,250,235,.18)" stroke-width=".8"/>
+
+          <!-- Sensor patches around inner perimeter -->
+          <!-- PPG green LEDs (2x) -->
+          <rect x="-32" y="-66" width="24" height="14" rx="2" fill="#3AA66E" stroke="var(--ink)" stroke-width=".7"/>
+          <rect x="8" y="-66" width="24" height="14" rx="2" fill="#3AA66E" stroke="var(--ink)" stroke-width=".7"/>
+          <!-- PPG red LED -->
+          <rect x="-78" y="-62" width="20" height="12" rx="2" fill="var(--red)" stroke="var(--ink)" stroke-width=".7"/>
+          <!-- PPG IR LED -->
+          <rect x="58" y="-62" width="20" height="12" rx="2" fill="#5A4A6E" stroke="var(--ink)" stroke-width=".7"/>
+          <!-- IR photodetector -->
+          <rect x="-120" y="-54" width="22" height="12" rx="2" fill="#1A1A22" stroke="var(--ink)" stroke-width=".7"/>
+          <rect x="98" y="-54" width="22" height="12" rx="2" fill="#1A1A22" stroke="var(--ink)" stroke-width=".7"/>
+          <!-- NTC thermistor — small disk -->
+          <circle cx="-160" cy="-30" r="6" fill="#C9B89A" stroke="var(--ink)" stroke-width=".7"/>
+          <!-- Capillary spectrometer window -->
+          <rect x="135" y="-40" width="28" height="12" rx="2" fill="#7FB3CB" stroke="var(--ink)" stroke-width=".7" opacity=".9"/>
+          <!-- MEMS IMU chip — square -->
+          <rect x="-15" y="40" width="30" height="22" rx="1" fill="var(--vellum-deep)" stroke="var(--ink)" stroke-width=".7"/>
+          <line x1="-12" y1="44" x2="12" y2="44" stroke="var(--ink)" stroke-width=".4"/>
+          <line x1="-12" y1="48" x2="12" y2="48" stroke="var(--ink)" stroke-width=".4"/>
+          <line x1="-12" y1="52" x2="12" y2="52" stroke="var(--ink)" stroke-width=".4"/>
+          <text x="0" y="55" class="dim-text" text-anchor="middle" font-size="6">IMU·3</text>
+          <!-- Battery cell — curved band representation -->
+          <path d="M -130 50 Q -65 78 0 80 Q 65 78 130 50" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M -130 56 Q -65 84 0 86 Q 65 84 130 56" fill="none" stroke="var(--ink)" stroke-width=".7" stroke-dasharray="3 3" opacity=".55"/>
+          <!-- NFC coil — concentric arcs -->
+          <ellipse cx="0" cy="0" rx="175" ry="62" fill="none" stroke="var(--red)" stroke-width=".7" opacity=".55" stroke-dasharray="2 3"/>
+          <ellipse cx="0" cy="0" rx="170" ry="60" fill="none" stroke="var(--red)" stroke-width=".7" opacity=".4" stroke-dasharray="2 3"/>
+        </g>
+
+        <!-- ===== ASSEMBLY ARROW between halves ===== -->
+        <g>
+          <line class="draft-line dashed" x1="0" y1="-50" x2="0" y2="50" />
+          <polygon points="0,52 -5,42 5,42" fill="var(--ink)"/>
+          <polygon points="0,-52 -5,-42 5,-42" fill="var(--ink)"/>
+          <rect x="-26" y="-8" width="52" height="16" fill="var(--vellum-pale)" stroke="var(--ink)" stroke-width=".7"/>
+          <text x="0" y="2" class="dim-text" text-anchor="middle" font-size="9">SECT A–A</text>
+        </g>
+
+        <!-- ===== LEADER LINES + CALLOUTS ===== -->
+        <!-- ① PPG -->
+        <g>
+          <line class="leader" x1="-22" y1="64" x2="-220" y2="-280"/>
+          <circle cx="-22" cy="64" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="-235" cy="-292" r="12"/>
+          <text class="callout-num" x="-235" y="-292">01</text>
+        </g>
+        <!-- ② NTC -->
+        <g>
+          <line class="leader" x1="-160" y1="100" x2="-320" y2="-80"/>
+          <circle cx="-160" cy="100" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="-340" cy="-92" r="12"/>
+          <text class="callout-num" x="-340" y="-92">02</text>
+        </g>
+        <!-- ③ Capillary spectrometer -->
+        <g>
+          <line class="leader" x1="150" y1="90" x2="320" y2="-30"/>
+          <circle cx="150" cy="90" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="340" cy="-42" r="12"/>
+          <text class="callout-num" x="340" y="-42">03</text>
+        </g>
+        <!-- ④ IMU -->
+        <g>
+          <line class="leader" x1="0" y1="180" x2="160" y2="270"/>
+          <circle cx="0" cy="180" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="174" cy="280" r="12"/>
+          <text class="callout-num" x="174" y="280">04</text>
+        </g>
+        <!-- ⑤ Vagal resonator (route to outer band) -->
+        <g>
+          <line class="leader red" x1="-150" y1="-180" x2="-300" y2="-220"/>
+          <circle cx="-150" cy="-180" r="2.5" fill="var(--red)"/>
+          <circle class="callout-circle" cx="-320" cy="-220" r="12" stroke="var(--red)"/>
+          <text class="callout-num" x="-320" y="-220" fill="var(--red)">05</text>
+        </g>
+        <!-- ⑥ NFC coil -->
+        <g>
+          <line class="leader" x1="170" y1="160" x2="320" y2="200"/>
+          <circle cx="170" cy="160" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="340" cy="208" r="12"/>
+          <text class="callout-num" x="340" y="208">06</text>
+        </g>
+        <!-- ⑦ Battery -->
+        <g>
+          <line class="leader" x1="-90" y1="208" x2="-270" y2="270"/>
+          <circle cx="-90" cy="208" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="-290" cy="280" r="12"/>
+          <text class="callout-num" x="-290" y="280">07</text>
+        </g>
+        <!-- ⑧ Sapphire window — on top band -->
+        <g>
+          <line class="leader" x1="120" y1="-180" x2="290" y2="-280"/>
+          <circle cx="120" cy="-180" r="2" fill="var(--ink)"/>
+          <circle class="callout-circle" cx="310" cy="-292" r="12"/>
+          <text class="callout-num" x="310" y="-292">08</text>
+        </g>
+
+        <!-- ===== DIMENSIONS ===== -->
+        <!-- Outer diameter top -->
+        <g>
+          <line class="draft-line" x1="-220" y1="-265" x2="-220" y2="-220"/>
+          <line class="draft-line" x1="220" y1="-265" x2="220" y2="-220"/>
+          <line class="draft-line" x1="-220" y1="-248" x2="220" y2="-248"/>
+          <polygon points="-220,-248 -210,-251 -210,-245" fill="var(--ink)"/>
+          <polygon points="220,-248 210,-251 210,-245" fill="var(--ink)"/>
+          <rect x="-20" y="-258" width="40" height="14" fill="var(--vellum)" />
+          <text x="0" y="-248" class="dim-text" text-anchor="middle" dominant-baseline="central">⌀ 22.0</text>
+        </g>
+        <!-- Inner diameter -->
+        <g>
+          <line class="draft-line dotted" x1="-155" y1="-130" x2="155" y2="-130"/>
+          <text x="0" y="-118" class="dim-text" text-anchor="middle">⌀ 18.4 inner · size 9</text>
+        </g>
+        <!-- Band height (overall) -->
+        <g transform="translate(310,0)">
+          <line class="draft-line" x1="0" y1="-208" x2="-20" y2="-208"/>
+          <line class="draft-line" x1="0" y1="208" x2="-20" y2="208"/>
+          <line class="draft-line" x1="-10" y1="-208" x2="-10" y2="208"/>
+          <polygon points="-10,-208 -13,-198 -7,-198" fill="var(--ink)"/>
+          <polygon points="-10,208 -13,198 -7,198" fill="var(--ink)"/>
+          <text x="0" y="0" class="dim-text" text-anchor="start" dominant-baseline="central">7.9</text>
+        </g>
+
+        <!-- ===== SCALE BAR ===== -->
+        <g transform="translate(-340,300)">
+          <line class="draft-line" x1="0" y1="0" x2="80" y2="0"/>
+          <line class="draft-line" x1="0" y1="-4" x2="0" y2="4"/>
+          <line class="draft-line" x1="40" y1="-3" x2="40" y2="3"/>
+          <line class="draft-line" x1="80" y1="-4" x2="80" y2="4"/>
+          <text x="0" y="18" class="dim-text">0</text>
+          <text x="40" y="18" class="dim-text" text-anchor="middle">5</text>
+          <text x="80" y="18" class="dim-text" text-anchor="end">10 mm</text>
+        </g>
+        <!-- View label -->
+        <g transform="translate(220,300)">
+          <text class="dim-text" text-anchor="end" font-size="11" font-weight="600" fill="var(--ink)">VIEW: AXONOMETRIC · ISO 30°</text>
+          <text x="0" y="14" class="dim-text" text-anchor="end">SCALE 4:1 — DRAWING NOT TO ACTUAL SIZE</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- RIGHT: live spec column -->
+    <div class="col-right">
+      <div class="label"><span>Spec / Ring 4</span><span class="n">REV 04</span></div>
+      <ul>
+        <li><span class="id">m</span><span>Mass, finished</span><span class="v">2.2 g</span></li>
+        <li><span class="id">h</span><span>Profile height</span><span class="v">2.45 mm</span></li>
+        <li><span class="id">w</span><span>Inner width</span><span class="v">7.9 mm</span></li>
+        <li><span class="id">f</span><span>Sample rate, PPG</span><span class="v">250 Hz</span></li>
+        <li><span class="id">f</span><span>Sample rate, IMU</span><span class="v">100 Hz</span></li>
+        <li><span class="id">t</span><span>Body-temp resolution</span><span class="v">0.01 °C</span></li>
+        <li><span class="id">b</span><span>Battery, typical</span><span class="v">8 days</span></li>
+        <li><span class="id">b</span><span>Recharge to 100%</span><span class="v">80 min</span></li>
+        <li><span class="id">i</span><span>Ingress rating</span><span class="v">10 ATM</span></li>
+        <li><span class="id">σ</span><span>Biosignals derived</span><span class="v">50+</span></li>
+      </ul>
+      <div class="blurb">
+        <b>Built in Oulu, 67° north.</b> The same town for fifteen years, the same engineers, the same obsession with the night. Read by physicians, validated by peer review, worn by half a million people who'd rather know.
+      </div>
     </div>
   </div>
-  <div></div>
 
-  <div class="ribbon">
-    <div class="ribbon-label">
-      <span><span class="mono">24H · LAST FULL DAY</span></span>
-      <span class="live">LIVE · 58 BPM</span>
+  <!-- Live trace at bottom -->
+  <div class="live-trace">
+    <div class="head">
+      <span>TRACE 24H · CH1 HR · CH2 HRV · CH3 SKIN-T</span>
+      <span class="live">LIVE · TX 58 BPM · 62 ms · 32.4°C</span>
     </div>
-    <svg viewBox="0 0 1600 80" preserveAspectRatio="none" id="ribbon-svg">
-      <!-- generated by JS -->
-    </svg>
+    <svg viewBox="0 0 1600 90" preserveAspectRatio="none" id="ribbon-svg"></svg>
+  </div>
+
+  <!-- Title block bottom right -->
+  <div class="title-block">
+    <div class="b"><span class="l">Project</span><span class="v">Ōura · Ring 4</span></div>
+    <div class="b"><span class="l">Drawing</span><span class="v">01 of 05</span></div>
+    <div class="b"><span class="l">Scale</span><span class="v">4 : 1</span></div>
+    <div class="b"><span class="l">Sheet</span><span class="v">A — Assembly</span></div>
+    <div class="b"><span class="l">Drawn</span><span class="v">J. Korpinen</span></div>
+    <div class="b"><span class="l">Filed</span><span class="v">2026-04-12</span></div>
+    <div class="b"><span class="l">Rev</span><span class="v">04</span></div>
+    <div class="b"><span class="l">Folio</span><span class="v">67°02′ N</span></div>
   </div>
 </section>
 
-<section class="chapters">
-
-  <article class="chapter" id="sleep">
-    <div class="stars"></div>
+<!-- ============ CHAPTER 01 / SLEEP ============ -->
+<section class="chapter" id="sleep">
+  <div class="sheet-stamp"><b>DRAWING 02 / 05</b><br/>Nocturnal Trace · Subject 0001<br/>Sheet B — Hypnogram + HR</div>
+  <div class="sheet-title">
+    <div class="num">Chapter 01 · Sleep</div>
+    <h2>The first place<br/><em>healing</em> happens.</h2>
+  </div>
+  <div class="chapter-body">
     <div>
-      <div class="meta">Chapter 01 · Sleep</div>
-      <h2>The first place<br/><em class="italic">healing</em> happens.</h2>
-      <p>Every stage of last night, mapped to the minute. REM where it should be. Deep where it shouldn't be cut short. Heart rate falling at the right hour. Body temperature finding its trough at 4:13 AM.</p>
-      <div class="stats-row">
-        <div><div class="n">8<span style="font-size:.5em">h 12m</span></div><div class="l">Total</div></div>
-        <div><div class="n">87</div><div class="l">Sleep score</div></div>
-        <div><div class="n">−0.32°<span style="font-size:.5em">C</span></div><div class="l">Body temp</div></div>
+      <p class="lede">Every stage of last night, mapped to the minute.</p>
+      <p>REM where it should be. Deep where it shouldn't be cut short. Heart rate falling at the right hour. Body temperature finding its trough at 4:13 AM — the moment the immune system does its quietest, most important work.</p>
+      <p>This is not a graph for staring at. It is a graph for sleeping easier the next night.</p>
+      <div class="spec-table">
+        <div class="row"><span class="l">Total · in bed</span><span class="v">8h 12m</span></div>
+        <div class="row"><span class="l">Efficiency</span><span class="v">94%</span></div>
+        <div class="row"><span class="l">Sleep score</span><span class="v"><em>87</em></span></div>
+        <div class="row"><span class="l">Body temp · Δ baseline</span><span class="v">−0.32 °C</span></div>
+        <div class="row"><span class="l">Resting HR · min</span><span class="v">42 BPM</span></div>
+        <div class="row"><span class="l">HRV · avg</span><span class="v">62 ms</span></div>
       </div>
     </div>
-    <div class="hypnogram">
-      <svg viewBox="0 0 800 360" id="hypno-svg"></svg>
+    <div class="scope">
+      <div class="scope-head">
+        <span>SCOPE · CH1 HYPNOGRAM · CH2 HR · SWEEP 8h12m</span>
+        <b>NIGHT OF 2026-04-11</b>
+      </div>
+      <svg viewBox="0 0 820 380" id="hypno-svg" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="scope-tags">
+        <span><span class="sw" style="background:var(--vellum-deep)"></span>AWAKE</span>
+        <span><span class="sw" style="background:#D8A88A"></span>REM</span>
+        <span><span class="sw" style="background:#8A7960"></span>LIGHT</span>
+        <span><span class="sw" style="background:var(--ink)"></span>DEEP</span>
+        <span><span class="sw" style="background:var(--red)"></span>HR · 42–68 BPM</span>
+      </div>
     </div>
-  </article>
+  </div>
+  <div class="title-block">
+    <div class="b"><span class="l">Project</span><span class="v">Ōura · Ring 4</span></div>
+    <div class="b"><span class="l">Drawing</span><span class="v">02 of 05</span></div>
+    <div class="b"><span class="l">Series</span><span class="v">Sleep · 84 nights</span></div>
+    <div class="b"><span class="l">Sheet</span><span class="v">B — Hypnogram</span></div>
+    <div class="b"><span class="l">Drawn</span><span class="v">A. Pesonen</span></div>
+    <div class="b"><span class="l">Filed</span><span class="v">2026-04-12</span></div>
+    <div class="b"><span class="l">Rev</span><span class="v">02</span></div>
+    <div class="b"><span class="l">Window</span><span class="v">23:14–07:26</span></div>
+  </div>
+</section>
 
-  <article class="chapter" id="recovery">
+<!-- ============ CHAPTER 02 / RECOVERY ============ -->
+<section class="chapter recovery" id="recovery">
+  <div class="sheet-stamp"><b>DRAWING 03 / 05</b><br/>Readiness Index<br/>Sheet C — Dial + 28-day Plate</div>
+  <div class="sheet-title">
+    <div class="num">Chapter 02 · Recovery</div>
+    <h2>A readiness score<br/>that reads <em>you</em>.</h2>
+  </div>
+  <div class="chapter-body">
     <div>
-      <div class="meta">Chapter 02 · Recovery</div>
-      <h2>A readiness score<br/>that reads <em class="italic">you</em>.</h2>
-      <p>HRV, body temperature, respiratory rate, prior strain — woven into a single number that tells you whether today is for pushing or for softness. Eight weeks of mornings shown to the right.</p>
-      <div class="stats-row">
-        <div><div class="n">87</div><div class="l">Today</div></div>
-        <div><div class="n">82</div><div class="l">28-day avg</div></div>
-        <div><div class="n">+9<span style="font-size:.5em">ms</span></div><div class="l">HRV trend</div></div>
+      <p class="lede">HRV, body temperature, respiratory rate, prior strain.</p>
+      <p>Woven into a single number that tells you whether today is for pushing or for softness. Eight weeks of mornings stamped to the right — the run of greens that means a body finding its rhythm, and the one Tuesday in red that means a body asking for a quieter day.</p>
+      <div class="spec-table">
+        <div class="row"><span class="l">Today · readiness</span><span class="v"><em>87</em></span></div>
+        <div class="row"><span class="l">28-day · avg</span><span class="v">82</span></div>
+        <div class="row"><span class="l">HRV · trend Δ</span><span class="v">+9 ms</span></div>
+        <div class="row"><span class="l">Resp rate</span><span class="v">14.2 / min</span></div>
+        <div class="row"><span class="l">Strain · yesterday</span><span class="v">Moderate</span></div>
       </div>
     </div>
     <div class="recovery-grid">
-      <div class="gauge">
+      <div class="dial">
         <svg viewBox="0 0 200 200">
-          <circle class="track" cx="100" cy="100" r="85"/>
-          <circle class="arc" cx="100" cy="100" r="85"/>
+          <!-- Tick marks -->
+          <g id="dial-ticks"></g>
+          <!-- Track -->
+          <circle fill="none" stroke="var(--ink-faint)" stroke-width="2" cx="100" cy="100" r="78"/>
+          <!-- Arc -->
+          <circle class="arc" cx="100" cy="100" r="85" transform="rotate(-90 100 100)"/>
         </svg>
         <div class="center">
           <div class="score">87</div>
           <div class="lbl">READY</div>
+          <div class="small">+5 vs 28d</div>
         </div>
       </div>
-      <div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;opacity:.55;margin-bottom:10px">28 DAYS · M T W T F S S</div>
+      <div class="thermal">
+        <div class="head">
+          <span>READINESS · 28 DAY PLATE</span>
+          <b>M T W T F S S</b>
+        </div>
         <div class="heatmap" id="heatmap"></div>
-        <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;opacity:.4;margin-top:10px">
-          <span>LOW</span><span>RESTFUL  RESTORED  PRIMED  PEAK</span>
+        <div class="heatmap-legend">
+          <span>LOW</span>
+          <div class="scale"></div>
+          <span>PEAK</span>
         </div>
       </div>
     </div>
-  </article>
+  </div>
+  <div class="title-block">
+    <div class="b"><span class="l">Project</span><span class="v">Ōura · Ring 4</span></div>
+    <div class="b"><span class="l">Drawing</span><span class="v">03 of 05</span></div>
+    <div class="b"><span class="l">Window</span><span class="v">28 days</span></div>
+    <div class="b"><span class="l">Sheet</span><span class="v">C — Readiness</span></div>
+    <div class="b"><span class="l">Drawn</span><span class="v">R. Lehto</span></div>
+    <div class="b"><span class="l">Filed</span><span class="v">2026-04-12</span></div>
+    <div class="b"><span class="l">Rev</span><span class="v">01</span></div>
+    <div class="b"><span class="l">Index</span><span class="v">R/28</span></div>
+  </div>
+</section>
 
-  <article class="chapter" id="rhythm">
+<!-- ============ CHAPTER 03 / RHYTHM ============ -->
+<section class="chapter" id="rhythm">
+  <div class="sheet-stamp"><b>DRAWING 04 / 05</b><br/>Circadian Polar · 28 d<br/>Sheet D — Wheel</div>
+  <div class="sheet-title">
+    <div class="num">Chapter 03 · Rhythm</div>
+    <h2>Cycles, not<br/><em>spikes</em>.</h2>
+  </div>
+  <div class="chapter-body">
     <div>
-      <div class="meta">Chapter 03 · Rhythm</div>
-      <h2>Cycles, not<br/><em class="italic">spikes</em>.</h2>
-      <p>Your body keeps time — circadian, hormonal, seasonal. Ōura draws the curves you can't feel, the ones that decide how Tuesday goes. For women, an unmatched cycle map. For everyone, the rest of you.</p>
-      <div class="stats-row">
-        <div><div class="n">28<span style="font-size:.5em">d</span></div><div class="l">Cycle</div></div>
-        <div><div class="n">Day 14</div><div class="l">Ovulatory</div></div>
-        <div><div class="n">36.7°<span style="font-size:.5em">C</span></div><div class="l">BBT</div></div>
+      <p class="lede">Your body keeps time — circadian, hormonal, seasonal.</p>
+      <p>Ōura draws the curves you can't feel, the ones that decide how Tuesday goes. For women, an unmatched cycle map. For everyone, the rest of you — the body temperature that climbs in the second half of a month, the resting heart rate that wanders with the light.</p>
+      <div class="spec-table">
+        <div class="row"><span class="l">Cycle · current</span><span class="v">28 d</span></div>
+        <div class="row"><span class="l">Phase · today</span><span class="v"><em>Day 14 · Ovulatory</em></span></div>
+        <div class="row"><span class="l">BBT · today</span><span class="v">36.7 °C</span></div>
+        <div class="row"><span class="l">BBT · Δ baseline</span><span class="v">+0.34 °C</span></div>
+        <div class="row"><span class="l">Confidence</span><span class="v">98%</span></div>
       </div>
     </div>
-    <div class="cycle-wheel">
+    <div class="polar">
+      <div class="polar-corner tl">Drawing 04 D · <b>Sub. 0001</b></div>
+      <div class="polar-corner tr">28 days · clockwise<br/><b>0° = day 1</b></div>
+      <div class="polar-corner bl">BBT · 36.3 → 36.95 °C</div>
+      <div class="polar-corner br">Filed 2026-04-12<br/>Rev 03</div>
       <svg viewBox="0 0 540 540" id="cycle-svg"></svg>
     </div>
-  </article>
+  </div>
+  <div class="title-block">
+    <div class="b"><span class="l">Project</span><span class="v">Ōura · Ring 4</span></div>
+    <div class="b"><span class="l">Drawing</span><span class="v">04 of 05</span></div>
+    <div class="b"><span class="l">Span</span><span class="v">28 days</span></div>
+    <div class="b"><span class="l">Sheet</span><span class="v">D — Polar</span></div>
+    <div class="b"><span class="l">Drawn</span><span class="v">M. Niemi</span></div>
+    <div class="b"><span class="l">Filed</span><span class="v">2026-04-12</span></div>
+    <div class="b"><span class="l">Rev</span><span class="v">03</span></div>
+    <div class="b"><span class="l">Index</span><span class="v">P/28</span></div>
+  </div>
+</section>
 
-  <article class="chapter" id="longevity">
+<!-- ============ CHAPTER 04 / LONGEVITY ============ -->
+<section class="chapter" id="longevity">
+  <div class="sheet-stamp"><b>DRAWING 05 / 05</b><br/>Cardio Trajectory · age 30–70<br/>Sheet E — Projection</div>
+  <div class="sheet-title">
+    <div class="num">Chapter 04 · Longevity</div>
+    <h2>Don't just live longer.<br/>Live <em>longer awake</em>.</h2>
+  </div>
+  <div class="chapter-body">
     <div>
-      <div class="meta">Chapter 04 · Longevity</div>
-      <h2>Don't just live longer.<br/>Live <em class="italic">longer awake</em>.</h2>
-      <p>Cardio age, metabolic age, the slow numbers that decide the next thirty years. The black line is the population. The copper line is you — seven years younger, and pulling away.</p>
-      <div class="stats-row">
-        <div><div class="n">34<span style="font-size:.5em">yr</span></div><div class="l">Cardio age</div></div>
-        <div><div class="n">−7<span style="font-size:.5em">yr</span></div><div class="l">vs chrono</div></div>
-        <div><div class="n">47<span style="font-size:.5em">ml</span></div><div class="l">VO₂ max</div></div>
+      <p class="lede">Cardio age. Metabolic age. The slow numbers.</p>
+      <p>The dashed line is the population. The red line is you — seven years younger by cardio age, and pulling away. Each ring on the chart is a year. Each year is a chance to bend the curve back up.</p>
+      <div class="spec-table">
+        <div class="row"><span class="l">Cardio age</span><span class="v"><em>34 yr</em></span></div>
+        <div class="row"><span class="l">Δ chrono</span><span class="v">−7 yr</span></div>
+        <div class="row"><span class="l">VO₂ max · today</span><span class="v">47 ml/kg/min</span></div>
+        <div class="row"><span class="l">Pop. percentile</span><span class="v">92nd</span></div>
+        <div class="row"><span class="l">Projection · age 70</span><span class="v">31 ml/kg/min</span></div>
       </div>
     </div>
-    <div class="trajectory">
-      <svg viewBox="0 0 700 360" id="traj-svg"></svg>
+    <div class="traj">
+      <div class="head"><span>VO₂ MAX · 40 YR PROJECTION</span><b>ELLIOT · M · 41</b></div>
+      <svg viewBox="0 0 720 380" id="traj-svg"></svg>
       <div class="traj-legend">
-        <span><span class="swatch" style="background:rgba(232,221,203,.5)"></span>Population</span>
-        <span><span class="swatch" style="background:#B8704A"></span>You</span>
+        <span><span class="sw" style="background:#C9C0A6;border-bottom:1px dashed #C9C0A6"></span>Population mean</span>
+        <span><span class="sw" style="background:#E48A78"></span>Subject 0001 — observed + projected</span>
       </div>
     </div>
-  </article>
+  </div>
+  <div class="title-block">
+    <div class="b"><span class="l">Project</span><span class="v">Ōura · Ring 4</span></div>
+    <div class="b"><span class="l">Drawing</span><span class="v">05 of 05</span></div>
+    <div class="b"><span class="l">Window</span><span class="v">40 years</span></div>
+    <div class="b"><span class="l">Sheet</span><span class="v">E — Trajectory</span></div>
+    <div class="b"><span class="l">Drawn</span><span class="v">P. Salo</span></div>
+    <div class="b"><span class="l">Filed</span><span class="v">2026-04-12</span></div>
+    <div class="b"><span class="l">Rev</span><span class="v">02</span></div>
+    <div class="b"><span class="l">Cohort</span><span class="v">M · 40–45</span></div>
+  </div>
 </section>
 
+<!-- ============ REVEAL ============ -->
 <section class="reveal">
-  <h2>Made for <span class="name" id="nm">you</span>.<br/>Worn for <em class="italic">your</em> life.</h2>
-  <input id="nameInput" placeholder="your name" maxlength="24" />
-  <div class="hint">Personalized from night 1</div>
+  <div class="stamp">SHEET F · personalization · NIGHT 1</div>
+  <h2>Made for <span class="name" id="nm">you</span>.<br/>Drawn for <em class="italic">your</em> life.</h2>
+  <input id="nameInput" placeholder="your name" maxlength="24" autocomplete="off" />
+  <div class="hint">— DRAWING ASSIGNED, REV 01 · 2026 —</div>
 </section>
 
+<!-- ============ MEMBERSHIP ============ -->
 <section class="member">
   <div class="col">
-    <h3>Membership<br/>that <em class="italic">earns</em><br/>its keep.</h3>
-    <p>$5.99/month. Unlimited insights, science-grade updates, three new health features a year. Cancel anytime — the ring is yours regardless.</p>
-    <p style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin:0">HSA · FSA eligible · Affirm available</p>
+    <h3>Membership<br/>that <em>earns</em><br/>its keep.</h3>
+    <p>$5.99/month. Unlimited insights, peer-reviewed updates, three new health features a year — vetted in the Oulu lab before they ship.</p>
+    <p class="micro">Cancel anytime · ring is yours · HSA · FSA · Affirm</p>
   </div>
   <div class="col">
-    <div class="card">
-      <div class="top"><span>Ōura · Member</span><span>04 / 38</span></div>
-      <div class="mid">Listen<br/><em>longer.</em></div>
-      <div class="bot"><span>Since 2026</span><span class="ring-small"></span></div>
+    <div class="spec-card">
+      <div class="sc-head">
+        <span class="l">Ōura · Member</span>
+        <span class="r">CARD 04 / 38</span>
+      </div>
+      <div class="sc-body">
+        <div class="sc-mark">Listen<br/><em>longer.</em></div>
+        <div class="sc-rows">
+          <div><div class="k">Member since</div><div class="v">2026 · Apr</div></div>
+          <div><div class="k">Ring</div><div class="v">4 · Ti · Sz 9</div></div>
+          <div><div class="k">Lab</div><div class="v">Oulu · 67°N</div></div>
+          <div><div class="k">Issue</div><div class="v">Rev 04</div></div>
+        </div>
+      </div>
+      <div class="sc-foot">
+        <span class="l"><span class="ring-glyph"></span>SUBJECT 0001</span>
+        <span class="r">VALID THRU 09 / 28</span>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- ============ FOOTER ============ -->
 <footer>
   <div class="top">
-    <div><div class="made"><em>Made in Oulu,<br/>67° north.</em><small>The cold makes things clearer.</small></div></div>
+    <div><div class="made">Made in Oulu,<br/><em>67° north.</em><small>The cold makes things clearer.</small></div></div>
     <div><h4>Shop</h4><ul><li>Ōura Ring 4</li><li>Accessories</li><li>Gift</li><li>Sizing kit</li></ul></div>
     <div><h4>Learn</h4><ul><li>Health features</li><li>The science</li><li>Stories</li><li>Newsroom</li></ul></div>
     <div><h4>Company</h4><ul><li>About</li><li>Research</li><li>Careers</li><li>Contact</li></ul></div>
   </div>
-  <div class="bot"><span><span class="ring-small"></span>ŌURA © 2026</span><span>Privacy · Terms · HIPAA</span></div>
+  <div class="bot"><span><span class="ring-small"></span>ŌURA · DRAWING SERIES · 2026</span><span>Privacy · Terms · HIPAA · ISO 9001</span></div>
 </footer>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js"
-  }
-}
-</script>
-<script type="module">
-import * as THREE from 'three';
-
-/* ====================== 3D RING ====================== */
-const canvas = document.getElementById('ring-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
-camera.position.set(0, 0, 8);
-
-// Lights — warm key, cool fill, copper rim
-const key = new THREE.DirectionalLight(0xfff0e0, 2.2);
-key.position.set(4, 5, 6);
-scene.add(key);
-const fill = new THREE.DirectionalLight(0xb8d4ff, 0.6);
-fill.position.set(-5, -2, 3);
-scene.add(fill);
-const rim = new THREE.DirectionalLight(0xb8704a, 1.4);
-rim.position.set(-3, 2, -5);
-scene.add(rim);
-const ambient = new THREE.HemisphereLight(0xfaf6ee, 0x1a1612, 0.35);
-scene.add(ambient);
-
-// Procedural envmap for metal reflections
-const envScene = new THREE.Scene();
-envScene.background = new THREE.Color(0xefe2d0);
-const envCam = new THREE.CubeCamera(0.1, 100, new THREE.WebGLCubeRenderTarget(256, {generateMipmaps:true, minFilter:THREE.LinearMipmapLinearFilter}));
-envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50,32,32), new THREE.MeshBasicMaterial({color:0xefe2d0, side:THREE.BackSide})));
-const envLight1 = new THREE.Mesh(new THREE.SphereGeometry(8, 16, 16), new THREE.MeshBasicMaterial({color:0xffffff}));
-envLight1.position.set(20, 15, 10); envScene.add(envLight1);
-const envLight2 = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 16), new THREE.MeshBasicMaterial({color:0xb8704a}));
-envLight2.position.set(-15, -5, -8); envScene.add(envLight2);
-envCam.update(renderer, envScene);
-scene.environment = envCam.renderTarget.texture;
-
-// THE RING — razor thin titanium band
-const ringGroup = new THREE.Group();
-const R = 1.55;          // major radius (finger size)
-const tubeR = 0.16;      // thin band thickness
-const bandHeight = 0.42; // ring height along finger axis
-
-// Outer band — use cylinder with hollow center for razor profile
-const outerGeo = new THREE.CylinderGeometry(R + tubeR*0.18, R + tubeR*0.18, bandHeight, 96, 1, true);
-const innerGeo = new THREE.CylinderGeometry(R - tubeR*0.18, R - tubeR*0.18, bandHeight, 96, 1, true);
-const topGeo = new THREE.RingGeometry(R - tubeR*0.18, R + tubeR*0.18, 96);
-const botGeo = topGeo.clone();
-
-const titanium = new THREE.MeshStandardMaterial({
-  color: 0xc9b8a0,
-  metalness: 0.95,
-  roughness: 0.28,
-  envMapIntensity: 1.4,
-});
-
-const outer = new THREE.Mesh(outerGeo, titanium);
-const inner = new THREE.Mesh(innerGeo, new THREE.MeshStandardMaterial({color:0x8a7960, metalness:0.85, roughness:0.42, side:THREE.BackSide, envMapIntensity:0.6}));
-const top = new THREE.Mesh(topGeo, titanium); top.rotation.x = -Math.PI/2; top.position.y = bandHeight/2;
-const bot = new THREE.Mesh(botGeo, titanium); bot.rotation.x = -Math.PI/2; bot.position.y = -bandHeight/2;
-
-ringGroup.add(outer, inner, top, bot);
-
-// Inner sensors — small panels visible through the band
-function sensor(angleDeg, w, h, color, emissive=0){
-  const g = new THREE.PlaneGeometry(w, h);
-  const m = new THREE.MeshStandardMaterial({color, metalness:.2, roughness:.6, emissive, emissiveIntensity: emissive ? 1.4 : 0});
-  const mesh = new THREE.Mesh(g, m);
-  const a = angleDeg * Math.PI/180;
-  mesh.position.set(Math.cos(a)*(R - tubeR*0.17), 0, Math.sin(a)*(R - tubeR*0.17));
-  mesh.lookAt(0,0,0);
-  return mesh;
-}
-ringGroup.add(sensor(-90, 0.16, 0.18, 0x1a0f08));   // IR sensor
-ringGroup.add(sensor(-72, 0.16, 0.18, 0x1a0f08));   // IR sensor
-const led = sensor(-81, 0.06, 0.06, 0xff7030, 0xff5020);
-ringGroup.add(led);
-
-// Subtle engraving line on outside (Oura visual signature)
-const engrave = new THREE.Mesh(
-  new THREE.TorusGeometry(R + tubeR*0.18 + 0.001, 0.003, 8, 96),
-  new THREE.MeshStandardMaterial({color:0x4a3f33, metalness:.5, roughness:.7})
-);
-engrave.rotation.x = Math.PI/2;
-ringGroup.add(engrave);
-
-// Orient as "O" — band axis pointing toward camera so the ring face faces us
-ringGroup.rotation.x = Math.PI / 2;
-scene.add(ringGroup);
-// Outer wrapper so we can spin around world Y without losing the O orientation
-const spinner = new THREE.Group();
-spinner.add(ringGroup);
-scene.add(spinner);
-
-// Sizing
-function resize(){
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  renderer.setSize(w, h, false);
-  camera.aspect = w/h;
-  camera.updateProjectionMatrix();
-}
-resize();
-window.addEventListener('resize', resize);
-
-// Cursor parallax
-let mouseX = 0, mouseY = 0, tgtX = 0, tgtY = 0;
-window.addEventListener('mousemove', e => {
-  tgtX = (e.clientX / window.innerWidth - 0.5) * 0.6;
-  tgtY = (e.clientY / window.innerHeight - 0.5) * 0.4;
-});
-
-let t = 0;
-function tick(){
-  t += 0.006;
-  mouseX += (tgtX - mouseX) * 0.06;
-  mouseY += (tgtY - mouseY) * 0.06;
-  // Spin like an "O" — rotate around world Y so the ring face goes O → ellipse → O
-  spinner.rotation.y = t + mouseX * 0.5;
-  spinner.rotation.x = -mouseY * 0.3;
-  // LED pulse
-  const p = (Math.sin(t*4) + 1) / 2;
-  led.material.emissiveIntensity = 1.0 + p * 1.8;
-  renderer.render(scene, camera);
-  requestAnimationFrame(tick);
-}
-tick();
-
-// Hide ring after hero
-const hero = document.querySelector('.hero');
-new IntersectionObserver(es => es.forEach(e => {
-  document.body.classList.toggle('past-hero', !e.isIntersecting);
-}), { threshold: 0.1 }).observe(hero);
-
-/* ====================== DATA VIZ ====================== */
-
-// HERO RIBBON — 24h overlay of HR, HRV, temp, activity
+<script>
+/* ============ HERO RIBBON / LIVE TRACE ============ */
 (function ribbon(){
   const svg = document.getElementById('ribbon-svg');
-  const W = 1600, H = 80;
   const ns = 'http://www.w3.org/2000/svg';
-  // Sleep band
-  const sleep = document.createElementNS(ns,'rect');
-  sleep.setAttribute('x', 0); sleep.setAttribute('y', 0); sleep.setAttribute('width', 360); sleep.setAttribute('height', H);
-  sleep.setAttribute('fill', 'rgba(74,74,54,.08)');
-  svg.appendChild(sleep);
-  const sleep2 = document.createElementNS(ns,'rect');
-  sleep2.setAttribute('x', 1480); sleep2.setAttribute('y', 0); sleep2.setAttribute('width', 120); sleep2.setAttribute('height', H);
-  sleep2.setAttribute('fill', 'rgba(74,74,54,.08)');
-  svg.appendChild(sleep2);
-
-  // HR curve (resting low at night, peaks during day)
-  function curve(fn, color, opacity=1, width=1.5){
-    let d = '';
-    for (let i = 0; i <= 96; i++){
-      const x = (i/96) * W;
-      const y = H - fn(i/96) * H;
-      d += (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  const W=1600, H=90;
+  // Sleep bands (start/end)
+  [[0,360],[1480,1600]].forEach(([x,x2])=>{
+    const r=document.createElementNS(ns,'rect');
+    r.setAttribute('x',x); r.setAttribute('y',0); r.setAttribute('width',x2-x); r.setAttribute('height',H);
+    r.setAttribute('fill','rgba(15,26,36,.05)');
+    svg.appendChild(r);
+  });
+  // Horizontal mid grid lines
+  for (let i=1;i<4;i++){
+    const ln=document.createElementNS(ns,'line');
+    const y=(H/4)*i;
+    ln.setAttribute('x1',0); ln.setAttribute('x2',W); ln.setAttribute('y1',y); ln.setAttribute('y2',y);
+    ln.setAttribute('stroke','rgba(15,26,36,.07)'); ln.setAttribute('stroke-width','.5');
+    svg.appendChild(ln);
+  }
+  function curve(fn,color,opacity,width,dash){
+    let d='';
+    for (let i=0;i<=180;i++){
+      const x=(i/180)*W, y=H-fn(i/180)*H;
+      d+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
     }
-    const p = document.createElementNS(ns,'path');
-    p.setAttribute('d', d);
-    p.setAttribute('stroke', color);
-    p.setAttribute('stroke-width', width);
-    p.setAttribute('fill', 'none');
-    p.setAttribute('opacity', opacity);
-    p.setAttribute('stroke-linejoin', 'round');
+    const p=document.createElementNS(ns,'path');
+    p.setAttribute('d',d); p.setAttribute('stroke',color); p.setAttribute('stroke-width',width);
+    p.setAttribute('fill','none'); p.setAttribute('opacity',opacity);
+    if (dash) p.setAttribute('stroke-dasharray',dash);
     svg.appendChild(p);
   }
-  // HR: low during sleep, high midday + workout
-  curve(t => {
-    const sleeping = t < 0.22 || t > 0.92;
-    const base = sleeping ? 0.18 : 0.42;
-    const workout = Math.exp(-Math.pow((t-0.55)*14, 2)) * 0.45;
-    const noise = Math.sin(t*60)*0.02 + Math.sin(t*23)*0.015;
-    return Math.max(0.05, Math.min(0.92, base + workout + noise));
-  }, '#B8704A', 1, 1.6);
-  // HRV: inverse-ish
-  curve(t => {
-    const sleeping = t < 0.22 || t > 0.92;
-    const base = sleeping ? 0.78 : 0.5;
-    const dip = Math.exp(-Math.pow((t-0.55)*14, 2)) * 0.3;
-    return Math.max(0.1, Math.min(0.95, base - dip + Math.sin(t*40)*0.02));
-  }, '#4A4A36', 0.55, 1.2);
-  // Body temp: trough at 4am, peak at 6pm
-  curve(t => 0.5 + Math.sin((t - 0.83) * Math.PI * 2) * 0.18, '#D88A5C', 0.4, 1);
+  // HR
+  curve(t=>{
+    const sleep = t<0.22 || t>0.92;
+    const base = sleep ? 0.18 : 0.46;
+    const wk = Math.exp(-Math.pow((t-0.55)*14,2))*0.42;
+    const n = Math.sin(t*73)*0.018 + Math.sin(t*23)*0.014;
+    return Math.max(0.05,Math.min(0.92,base+wk+n));
+  },'#C1392B',1,1.4);
+  // HRV (dashed)
+  curve(t=>{
+    const sleep = t<0.22 || t>0.92;
+    const base = sleep ? 0.82 : 0.5;
+    const dip = Math.exp(-Math.pow((t-0.55)*14,2))*0.3;
+    return Math.max(0.1,Math.min(0.95,base-dip+Math.sin(t*40)*0.018));
+  },'#0F1A24',0.45,1,'2 3');
+  // Skin temp
+  curve(t=>0.5+Math.sin((t-0.83)*Math.PI*2)*0.18,'#1F5E5A',0.6,1.1);
+
   // Hour ticks
-  for (let h = 0; h <= 24; h += 6){
-    const x = (h/24) * W;
-    const tk = document.createElementNS(ns,'line');
-    tk.setAttribute('x1', x); tk.setAttribute('x2', x); tk.setAttribute('y1', H-4); tk.setAttribute('y2', H);
-    tk.setAttribute('stroke', 'rgba(22,19,16,.3)');
+  for (let h=0;h<=24;h+=3){
+    const x=(h/24)*W;
+    const tk=document.createElementNS(ns,'line');
+    tk.setAttribute('x1',x); tk.setAttribute('x2',x); tk.setAttribute('y1',H-6); tk.setAttribute('y2',H);
+    tk.setAttribute('stroke','rgba(15,26,36,.4)'); tk.setAttribute('stroke-width','.6');
     svg.appendChild(tk);
-    const txt = document.createElementNS(ns,'text');
-    txt.setAttribute('x', x + 4); txt.setAttribute('y', H - 8);
-    txt.setAttribute('font-family', 'JetBrains Mono, monospace');
-    txt.setAttribute('font-size', '9');
-    txt.setAttribute('fill', 'rgba(22,19,16,.4)');
-    txt.textContent = (h === 24 ? '00' : (h<10?'0':'') + h) + ':00';
+    const txt=document.createElementNS(ns,'text');
+    txt.setAttribute('x',x+3); txt.setAttribute('y',H-8);
+    txt.setAttribute('font-family','JetBrains Mono, monospace');
+    txt.setAttribute('font-size',9);
+    txt.setAttribute('fill','rgba(15,26,36,.45)');
+    txt.textContent=(h<10?'0':'')+h+':00';
     svg.appendChild(txt);
   }
 })();
 
-// SLEEP HYPNOGRAM
+/* ============ HYPNOGRAM ============ */
 (function hypnogram(){
-  const svg = document.getElementById('hypno-svg');
-  const W = 800, H = 360;
-  const ns = 'http://www.w3.org/2000/svg';
-  const startMin = 0, endMin = 492; // 8h12m
-  // Stages: 0=awake, 1=REM, 2=light, 3=deep
+  const svg=document.getElementById('hypno-svg');
+  const ns='http://www.w3.org/2000/svg';
+  const W=820, H=380, padL=58, padR=20, padT=24, padB=44;
+  const innerW = W-padL-padR;
+  // Grid
+  for (let i=0;i<=8;i++){
+    const x = padL + (i/8)*innerW;
+    const ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',x); ln.setAttribute('x2',x); ln.setAttribute('y1',padT); ln.setAttribute('y2',H-padB);
+    ln.setAttribute('stroke','rgba(15,26,36,.06)'); ln.setAttribute('stroke-width','.5');
+    svg.appendChild(ln);
+  }
+  // Stages
   const stages = [
     [0,5,0],[5,18,2],[18,42,3],[42,68,2],[68,88,1],
     [88,112,3],[112,140,2],[140,168,1],[168,196,3],
@@ -569,279 +958,415 @@ new IntersectionObserver(es => es.forEach(e => {
     [294,326,2],[326,352,1],[352,378,2],[378,402,3],
     [402,432,2],[432,460,1],[460,478,2],[478,485,0],[485,492,2]
   ];
-  const yMap = {0: 40, 1: 100, 2: 180, 3: 280};
-  const colors = {0:'#E8DDCB', 1:'#D88A5C', 2:'#8A7960', 3:'#4A4A36'};
-
-  // Draw stage bands
-  let prev = null;
-  stages.forEach(([s,e,k]) => {
-    const x1 = 40 + ((s-startMin)/(endMin-startMin))*(W-60);
-    const x2 = 40 + ((e-startMin)/(endMin-startMin))*(W-60);
-    const y = yMap[k];
-    // step line
-    if (prev !== null){
-      const vline = document.createElementNS(ns,'line');
-      vline.setAttribute('x1', x1); vline.setAttribute('x2', x1);
-      vline.setAttribute('y1', yMap[prev]); vline.setAttribute('y2', y);
-      vline.setAttribute('stroke', '#E8DDCB'); vline.setAttribute('stroke-width', 1.5); vline.setAttribute('opacity', .7);
-      svg.appendChild(vline);
+  const yMap = {0:padT+18, 1:padT+72, 2:padT+148, 3:padT+240};
+  const colors = {0:'#0F1A24', 1:'#D8A88A', 2:'#8A7960', 3:'#0F1A24'};
+  const fill = {0:'rgba(15,26,36,.08)', 1:'rgba(216,168,138,.4)', 2:'rgba(138,121,96,.3)', 3:'rgba(15,26,36,.7)'};
+  const endMin=492;
+  // Stage filled blocks
+  let prev=null;
+  stages.forEach(([s,e,k])=>{
+    const x1=padL + (s/endMin)*innerW;
+    const x2=padL + (e/endMin)*innerW;
+    const y=yMap[k];
+    // filled bar
+    const bar=document.createElementNS(ns,'rect');
+    bar.setAttribute('x',x1); bar.setAttribute('y',y-4); bar.setAttribute('width',x2-x1); bar.setAttribute('height',8);
+    bar.setAttribute('fill',fill[k]); bar.setAttribute('stroke',colors[k]); bar.setAttribute('stroke-width','.7');
+    svg.appendChild(bar);
+    if (prev!==null){
+      const v=document.createElementNS(ns,'line');
+      v.setAttribute('x1',x1); v.setAttribute('x2',x1); v.setAttribute('y1',yMap[prev]); v.setAttribute('y2',y);
+      v.setAttribute('stroke','rgba(15,26,36,.4)'); v.setAttribute('stroke-width','.6'); v.setAttribute('stroke-dasharray','1 2');
+      svg.appendChild(v);
     }
-    const hline = document.createElementNS(ns,'line');
-    hline.setAttribute('x1', x1); hline.setAttribute('x2', x2);
-    hline.setAttribute('y1', y); hline.setAttribute('y2', y);
-    hline.setAttribute('stroke', colors[k]); hline.setAttribute('stroke-width', 3); hline.setAttribute('stroke-linecap','round');
-    svg.appendChild(hline);
-    prev = k;
+    prev=k;
   });
-
-  // HR curve overlay
-  let d = '';
-  for (let i = 0; i <= 100; i++){
-    const x = 40 + (i/100)*(W-60);
-    const t = i/100;
-    const hr = 62 - Math.sin(t * Math.PI * 1.8) * 14 - (t < 0.3 ? 4 : 0) + Math.sin(t*30)*1.5;
-    const y = 340 - ((hr - 42) / 30) * 60;
-    d += (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  // HR overlay (lower section)
+  const hrY0 = H-padB-10, hrY1 = H-padB-100;
+  // HR baseline
+  const base = document.createElementNS(ns,'line');
+  base.setAttribute('x1',padL); base.setAttribute('x2',W-padR); base.setAttribute('y1',hrY0); base.setAttribute('y2',hrY0);
+  base.setAttribute('stroke','rgba(15,26,36,.3)'); base.setAttribute('stroke-dasharray','2 2'); base.setAttribute('stroke-width','.5');
+  svg.appendChild(base);
+  let d='';
+  for (let i=0;i<=120;i++){
+    const x=padL + (i/120)*innerW;
+    const t=i/120;
+    const hr = 62 - Math.sin(t*Math.PI*1.8)*14 - (t<0.3?4:0) + Math.sin(t*30)*1.6;
+    const y = hrY0 - ((hr-42)/30)*(hrY0-hrY1);
+    d += (i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
   }
-  const hr = document.createElementNS(ns,'path');
-  hr.setAttribute('d', d); hr.setAttribute('stroke', '#B8704A'); hr.setAttribute('stroke-width', 1.4); hr.setAttribute('fill','none'); hr.setAttribute('opacity', .85);
+  const hr=document.createElementNS(ns,'path');
+  hr.setAttribute('d',d); hr.setAttribute('stroke','#C1392B'); hr.setAttribute('stroke-width','1.4'); hr.setAttribute('fill','none'); hr.setAttribute('opacity','.9');
   svg.appendChild(hr);
-
   // Stage labels
-  const labels = ['AWAKE','REM','LIGHT','DEEP'];
-  [0,1,2,3].forEach(k => {
-    const txt = document.createElementNS(ns,'text');
-    txt.setAttribute('x', 0); txt.setAttribute('y', yMap[k] + 3);
-    txt.setAttribute('class','stage-label');
-    txt.textContent = labels[k];
-    svg.appendChild(txt);
+  ['AWAKE','REM','LIGHT','DEEP'].forEach((l,k)=>{
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',6); t.setAttribute('y',yMap[k]+3);
+    t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('font-size','9'); t.setAttribute('letter-spacing','1.5');
+    t.setAttribute('fill','rgba(15,26,36,.55)'); t.textContent=l;
+    svg.appendChild(t);
   });
   // Time axis
-  ['23:14','01:00','03:00','05:00','07:26'].forEach((label,i) => {
-    const x = 40 + (i/4)*(W-60);
-    const txt = document.createElementNS(ns,'text');
-    txt.setAttribute('x', x); txt.setAttribute('y', H - 6);
-    txt.setAttribute('class','axis-label');
-    txt.setAttribute('text-anchor', i===0?'start':(i===4?'end':'middle'));
-    txt.textContent = label;
-    svg.appendChild(txt);
+  ['23:14','00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:26'].forEach((label,i,arr)=>{
+    const x = padL + (i/(arr.length-1))*innerW;
+    const tx=document.createElementNS(ns,'text');
+    tx.setAttribute('x',x); tx.setAttribute('y',H-padB+18);
+    tx.setAttribute('font-family','JetBrains Mono, monospace'); tx.setAttribute('font-size','9'); tx.setAttribute('letter-spacing','1');
+    tx.setAttribute('fill','rgba(15,26,36,.5)'); tx.setAttribute('text-anchor',i===0?'start':(i===arr.length-1?'end':'middle'));
+    tx.textContent=label;
+    svg.appendChild(tx);
+    // tick
+    const tk=document.createElementNS(ns,'line');
+    tk.setAttribute('x1',x); tk.setAttribute('x2',x); tk.setAttribute('y1',H-padB); tk.setAttribute('y2',H-padB+4);
+    tk.setAttribute('stroke','rgba(15,26,36,.3)'); tk.setAttribute('stroke-width','.7');
+    svg.appendChild(tk);
   });
-  // HR axis label
-  const hrLbl = document.createElementNS(ns,'text');
-  hrLbl.setAttribute('x', W-4); hrLbl.setAttribute('y', 320); hrLbl.setAttribute('class','axis-label'); hrLbl.setAttribute('text-anchor','end'); hrLbl.setAttribute('fill','#B8704A');
-  hrLbl.textContent = 'HR · 42–68 BPM';
-  svg.appendChild(hrLbl);
+  // HR axis ticks
+  [40,50,60,70].forEach(v=>{
+    const y = hrY0 - ((v-42)/30)*(hrY0-hrY1);
+    const tx=document.createElementNS(ns,'text');
+    tx.setAttribute('x',W-padR-4); tx.setAttribute('y',y+3);
+    tx.setAttribute('font-family','JetBrains Mono, monospace'); tx.setAttribute('font-size','9');
+    tx.setAttribute('fill','#C1392B'); tx.setAttribute('text-anchor','end');
+    tx.textContent=v;
+    svg.appendChild(tx);
+  });
+  const hrLabel=document.createElementNS(ns,'text');
+  hrLabel.setAttribute('x',padL+8); hrLabel.setAttribute('y',hrY1-4);
+  hrLabel.setAttribute('font-family','JetBrains Mono, monospace'); hrLabel.setAttribute('font-size','9');
+  hrLabel.setAttribute('letter-spacing','1.5'); hrLabel.setAttribute('fill','#C1392B');
+  hrLabel.textContent='CH2 · HR · BPM';
+  svg.appendChild(hrLabel);
+
+  // Crosshair at "4:13 AM" marker
+  const crossX = padL + (0.6)*innerW;
+  const ch=document.createElementNS(ns,'line');
+  ch.setAttribute('x1',crossX); ch.setAttribute('x2',crossX); ch.setAttribute('y1',padT); ch.setAttribute('y2',H-padB);
+  ch.setAttribute('stroke','#C1392B'); ch.setAttribute('stroke-width','.5'); ch.setAttribute('stroke-dasharray','2 3');
+  svg.appendChild(ch);
+  const chLabel=document.createElementNS(ns,'text');
+  chLabel.setAttribute('x',crossX+6); chLabel.setAttribute('y',padT+12);
+  chLabel.setAttribute('font-family','JetBrains Mono, monospace'); chLabel.setAttribute('font-size','9');
+  chLabel.setAttribute('letter-spacing','1.2'); chLabel.setAttribute('fill','#C1392B');
+  chLabel.textContent='⌀ 04:13 · BODY-T TROUGH';
+  svg.appendChild(chLabel);
 })();
 
-// RECOVERY HEATMAP — 28 days
+/* ============ DIAL TICKS ============ */
+(function dial(){
+  const g=document.getElementById('dial-ticks');
+  if (!g) return;
+  const ns='http://www.w3.org/2000/svg';
+  for (let i=0;i<60;i++){
+    const a = (i/60)*Math.PI*2 - Math.PI/2;
+    const r1 = i%5===0 ? 90 : 92;
+    const r2 = i%5===0 ? 96 : 95;
+    const x1=100+Math.cos(a)*r1, y1=100+Math.sin(a)*r1;
+    const x2=100+Math.cos(a)*r2, y2=100+Math.sin(a)*r2;
+    const ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',x1); ln.setAttribute('y1',y1); ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
+    ln.setAttribute('stroke','rgba(15,26,36,.4)'); ln.setAttribute('stroke-width', i%5===0?'.9':'.5');
+    g.appendChild(ln);
+  }
+  // Numerals at quarters
+  [['0',-Math.PI/2],['25',0],['50',Math.PI/2],['75',Math.PI]].forEach(([t,a])=>{
+    const x=100+Math.cos(a)*72, y=100+Math.sin(a)*72;
+    const tx=document.createElementNS(ns,'text');
+    tx.setAttribute('x',x); tx.setAttribute('y',y+3);
+    tx.setAttribute('font-family','JetBrains Mono, monospace'); tx.setAttribute('font-size','7'); tx.setAttribute('letter-spacing','1');
+    tx.setAttribute('fill','rgba(15,26,36,.55)'); tx.setAttribute('text-anchor','middle');
+    tx.textContent=t;
+    g.appendChild(tx);
+  });
+})();
+
+/* ============ HEATMAP ============ */
 (function heatmap(){
-  const container = document.getElementById('heatmap');
-  // Deterministic-ish pattern, biased upward
-  const vals = [3,2,4,3,5,4,3, 2,3,4,5,5,4,3, 4,5,4,3,4,5,4, 3,4,5,4,5,4,3];
-  vals.forEach((v, i) => {
-    const c = document.createElement('div');
-    c.className = 'cell lvl-' + v;
-    const score = 55 + v * 7 + (i % 3);
-    c.innerHTML = '<span class="v">' + score + '</span>';
+  const container=document.getElementById('heatmap');
+  if (!container) return;
+  const vals=[3,2,4,3,5,4,3, 2,3,4,5,5,4,3, 4,5,4,3,4,5,4, 3,4,5,4,5,4,3];
+  vals.forEach((v,i)=>{
+    const c=document.createElement('div');
+    c.className='cell lvl-'+v;
+    const score=55+v*7+(i%3);
+    c.innerHTML=score;
     container.appendChild(c);
   });
+  const scale=document.querySelector('.heatmap-legend .scale');
+  if (scale){
+    [0,1,2,3,4,5].forEach(l=>{
+      const s=document.createElement('span');
+      s.style.background=getComputedStyle(document.querySelector('.heatmap .cell.lvl-'+l)).background;
+      scale.appendChild(s);
+    });
+  }
 })();
 
-// RHYTHM CYCLE WHEEL — 28-day polar with body temp ring
+/* ============ CYCLE WHEEL — polar drafting ============ */
 (function cycle(){
-  const svg = document.getElementById('cycle-svg');
-  const ns = 'http://www.w3.org/2000/svg';
-  const cx = 270, cy = 270;
-  const phases = [
-    { name: 'MENSTRUAL', start: 0, end: 5, color: '#B8704A', tone: 0.9 },
-    { name: 'FOLLICULAR', start: 5, end: 13, color: '#D8A88A', tone: 0.55 },
-    { name: 'OVULATORY', start: 13, end: 16, color: '#E8C9B0', tone: 0.8 },
-    { name: 'LUTEAL', start: 16, end: 28, color: '#8A7960', tone: 0.6 },
+  const svg=document.getElementById('cycle-svg');
+  if (!svg) return;
+  const ns='http://www.w3.org/2000/svg';
+  const cx=270, cy=270;
+  const phases=[
+    {name:'MENSTRUAL', start:0, end:5,  fill:'rgba(193,57,43,.18)', stroke:'#C1392B'},
+    {name:'FOLLICULAR',start:5, end:13, fill:'rgba(31,94,90,.13)',  stroke:'#1F5E5A'},
+    {name:'OVULATORY', start:13,end:16, fill:'rgba(193,57,43,.35)', stroke:'#C1392B'},
+    {name:'LUTEAL',    start:16,end:28, fill:'rgba(15,26,36,.07)',  stroke:'#0F1A24'},
   ];
-  function polar(r, deg){
-    const rad = (deg - 90) * Math.PI/180;
-    return [cx + Math.cos(rad)*r, cy + Math.sin(rad)*r];
+  function polar(r,deg){const rad=(deg-90)*Math.PI/180;return [cx+Math.cos(rad)*r, cy+Math.sin(rad)*r]}
+  function arcPath(r,sd,ed,w){
+    const [x1,y1]=polar(r,sd),[x2,y2]=polar(r,ed),[x3,y3]=polar(r-w,ed),[x4,y4]=polar(r-w,sd);
+    const lg = ed-sd>180?1:0;
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${lg} 1 ${x2} ${y2} L ${x3} ${y3} A ${r-w} ${r-w} 0 ${lg} 0 ${x4} ${y4} Z`;
   }
-  function arcPath(r, startDeg, endDeg, w){
-    const [x1,y1] = polar(r, startDeg);
-    const [x2,y2] = polar(r, endDeg);
-    const [x3,y3] = polar(r-w, endDeg);
-    const [x4,y4] = polar(r-w, startDeg);
-    const large = endDeg - startDeg > 180 ? 1 : 0;
-    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${r-w} ${r-w} 0 ${large} 0 ${x4} ${y4} Z`;
-  }
-
-  // Phase rings
-  phases.forEach(p => {
-    const path = document.createElementNS(ns,'path');
-    path.setAttribute('d', arcPath(210, (p.start/28)*360, (p.end/28)*360, 38));
-    path.setAttribute('fill', p.color);
-    path.setAttribute('opacity', p.tone * 0.55);
+  // Outer ruled rings
+  [240,180,120,60].forEach((r,i)=>{
+    const c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill','none');
+    c.setAttribute('stroke','rgba(15,26,36,.15)'); c.setAttribute('stroke-width','.6');
+    if (i%2) c.setAttribute('stroke-dasharray','2 3');
+    svg.appendChild(c);
+  });
+  // Phase bands
+  phases.forEach(p=>{
+    const path=document.createElementNS(ns,'path');
+    path.setAttribute('d',arcPath(225,(p.start/28)*360,(p.end/28)*360,35));
+    path.setAttribute('fill',p.fill); path.setAttribute('stroke',p.stroke); path.setAttribute('stroke-width','.7');
     svg.appendChild(path);
   });
-
-  // Day ticks
-  for (let i = 0; i < 28; i++){
-    const deg = (i/28)*360;
-    const [x1,y1] = polar(168, deg);
-    const [x2,y2] = polar(174, deg);
-    const ln = document.createElementNS(ns,'line');
+  // Day spokes
+  for (let i=0;i<28;i++){
+    const deg=(i/28)*360;
+    const [x1,y1]=polar(60,deg);
+    const [x2,y2]=polar(i%7===0?245:235,deg);
+    const ln=document.createElementNS(ns,'line');
     ln.setAttribute('x1',x1); ln.setAttribute('y1',y1); ln.setAttribute('x2',x2); ln.setAttribute('y2',y2);
-    ln.setAttribute('stroke','rgba(22,19,16,.3)'); ln.setAttribute('stroke-width', i%7===0?1.5:0.8);
+    ln.setAttribute('stroke','rgba(15,26,36,'+(i%7===0?'.4':'.12')+')');
+    ln.setAttribute('stroke-width', i%7===0?'.8':'.4');
     svg.appendChild(ln);
     if (i%7===0){
-      const [tx,ty] = polar(155, deg);
-      const t = document.createElementNS(ns,'text');
-      t.setAttribute('x',tx); t.setAttribute('y',ty+3); t.setAttribute('class','phase-label'); t.setAttribute('text-anchor','middle');
-      t.textContent = i || 1;
+      const [tx,ty]=polar(258,deg);
+      const t=document.createElementNS(ns,'text');
+      t.setAttribute('x',tx); t.setAttribute('y',ty+3);
+      t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('font-size','10'); t.setAttribute('letter-spacing','1');
+      t.setAttribute('fill','rgba(15,26,36,.55)'); t.setAttribute('text-anchor','middle');
+      t.textContent='D'+(i||1);
       svg.appendChild(t);
     }
   }
-
-  // BBT scatter — body temp dots one per day, around inner ring
-  for (let i = 0; i < 28; i++){
-    const deg = (i/28)*360;
-    // simulate temp: low follicular, spike at ovulation, elevated luteal
+  // BBT polyline
+  let d='';
+  for (let i=0;i<28;i++){
+    const deg=(i/28)*360;
     let temp;
-    if (i < 13) temp = 36.4 + Math.sin(i*0.4)*0.05;
-    else if (i < 16) temp = 36.55 + (i-13)*0.08;
-    else temp = 36.8 + Math.sin((i-16)*0.5)*0.06 - (i>24?0.05*(i-24):0);
-    const r = 70 + (temp - 36.3) * 80;
-    const [x,y] = polar(r, deg);
-    const c = document.createElementNS(ns,'circle');
-    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', i===13?5:3);
-    c.setAttribute('fill', i===13 ? '#B8704A' : 'rgba(22,19,16,.65)');
+    if (i<13) temp=36.4+Math.sin(i*0.4)*0.05;
+    else if (i<16) temp=36.55+(i-13)*0.08;
+    else temp=36.8+Math.sin((i-16)*0.5)*0.06 - (i>24?0.05*(i-24):0);
+    const r=85 + (temp-36.3)*110;
+    const [x,y]=polar(r,deg);
+    d+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+  }
+  d+=' Z';
+  const ln=document.createElementNS(ns,'path');
+  ln.setAttribute('d',d); ln.setAttribute('stroke','#0F1A24'); ln.setAttribute('stroke-width','1.3'); ln.setAttribute('fill','rgba(15,26,36,.04)'); ln.setAttribute('stroke-linejoin','round');
+  svg.appendChild(ln);
+  // BBT dots
+  for (let i=0;i<28;i++){
+    const deg=(i/28)*360;
+    let temp;
+    if (i<13) temp=36.4+Math.sin(i*0.4)*0.05;
+    else if (i<16) temp=36.55+(i-13)*0.08;
+    else temp=36.8+Math.sin((i-16)*0.5)*0.06 - (i>24?0.05*(i-24):0);
+    const r=85 + (temp-36.3)*110;
+    const [x,y]=polar(r,deg);
+    const c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',i===13?6:2.4);
+    c.setAttribute('fill',i===13?'var(--red)':'rgba(15,26,36,.75)');
+    if (i===13){
+      c.setAttribute('stroke','var(--ink)'); c.setAttribute('stroke-width','1');
+      const ring=document.createElementNS(ns,'circle');
+      ring.setAttribute('cx',x); ring.setAttribute('cy',y); ring.setAttribute('r',11);
+      ring.setAttribute('fill','none'); ring.setAttribute('stroke','#C1392B'); ring.setAttribute('stroke-width','.7'); ring.setAttribute('stroke-dasharray','2 2');
+      svg.appendChild(ring);
+    }
     svg.appendChild(c);
   }
-
-  // Connecting BBT line
-  let d = '';
-  for (let i = 0; i < 28; i++){
-    const deg = (i/28)*360;
-    let temp;
-    if (i < 13) temp = 36.4 + Math.sin(i*0.4)*0.05;
-    else if (i < 16) temp = 36.55 + (i-13)*0.08;
-    else temp = 36.8 + Math.sin((i-16)*0.5)*0.06 - (i>24?0.05*(i-24):0);
-    const r = 70 + (temp - 36.3) * 80;
-    const [x,y] = polar(r, deg);
-    d += (i===0?'M':'L') + x + ',' + y;
-  }
-  d += ' Z';
-  const ln = document.createElementNS(ns,'path');
-  ln.setAttribute('d', d); ln.setAttribute('stroke','#4A4A36'); ln.setAttribute('stroke-width',1.2); ln.setAttribute('fill','none'); ln.setAttribute('opacity',.5);
-  svg.appendChild(ln);
-
-  // Phase labels
-  phases.forEach(p => {
-    const mid = ((p.start + p.end)/2/28)*360;
-    const [tx,ty] = polar(230, mid);
-    const t = document.createElementNS(ns,'text');
-    t.setAttribute('x',tx); t.setAttribute('y',ty); t.setAttribute('class','phase-label'); t.setAttribute('text-anchor','middle');
-    t.textContent = p.name;
+  // Phase labels arc
+  phases.forEach(p=>{
+    const mid=((p.start+p.end)/2/28)*360;
+    const [tx,ty]=polar(285,mid);
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',tx); t.setAttribute('y',ty);
+    t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('font-size','11'); t.setAttribute('font-weight','600'); t.setAttribute('letter-spacing','2.5');
+    t.setAttribute('fill',p.stroke); t.setAttribute('text-anchor','middle');
+    t.textContent=p.name;
     svg.appendChild(t);
   });
-
   // Center
-  const centerText = document.createElementNS(ns,'text');
-  centerText.setAttribute('x',cx); centerText.setAttribute('y',cy-6); centerText.setAttribute('text-anchor','middle');
-  centerText.setAttribute('font-family','Fraunces, serif'); centerText.setAttribute('font-weight','300'); centerText.setAttribute('font-size','42');
-  centerText.setAttribute('fill','#161310'); centerText.textContent = 'Day 14';
-  svg.appendChild(centerText);
-  const centerSub = document.createElementNS(ns,'text');
-  centerSub.setAttribute('x',cx); centerSub.setAttribute('y',cy+18); centerSub.setAttribute('text-anchor','middle');
-  centerSub.setAttribute('class','phase-label');
-  centerSub.textContent = 'OVULATORY';
-  svg.appendChild(centerSub);
+  const c1=document.createElementNS(ns,'circle');
+  c1.setAttribute('cx',cx); c1.setAttribute('cy',cy); c1.setAttribute('r',54);
+  c1.setAttribute('fill','var(--vellum)'); c1.setAttribute('stroke','var(--ink)'); c1.setAttribute('stroke-width','.8');
+  svg.appendChild(c1);
+  const t1=document.createElementNS(ns,'text');
+  t1.setAttribute('x',cx); t1.setAttribute('y',cy-4); t1.setAttribute('text-anchor','middle');
+  t1.setAttribute('font-family','Fraunces, serif'); t1.setAttribute('font-weight','300'); t1.setAttribute('font-size','38');
+  t1.setAttribute('fill','var(--ink)'); t1.textContent='14';
+  svg.appendChild(t1);
+  const t2=document.createElementNS(ns,'text');
+  t2.setAttribute('x',cx); t2.setAttribute('y',cy+16); t2.setAttribute('text-anchor','middle');
+  t2.setAttribute('font-family','JetBrains Mono, monospace'); t2.setAttribute('font-size','8'); t2.setAttribute('letter-spacing','2');
+  t2.setAttribute('fill','var(--red)'); t2.textContent='OVULATORY';
+  svg.appendChild(t2);
+  // Crosshair at center
+  const ch1=document.createElementNS(ns,'line');
+  ch1.setAttribute('x1',cx-66); ch1.setAttribute('x2',cx-58); ch1.setAttribute('y1',cy); ch1.setAttribute('y2',cy);
+  ch1.setAttribute('stroke','var(--ink)'); ch1.setAttribute('stroke-width','.5');
+  svg.appendChild(ch1);
+  const ch2=ch1.cloneNode(); ch2.setAttribute('x1',cx+58); ch2.setAttribute('x2',cx+66); svg.appendChild(ch2);
+  const ch3=ch1.cloneNode(); ch3.setAttribute('x1',cx); ch3.setAttribute('x2',cx); ch3.setAttribute('y1',cy-66); ch3.setAttribute('y2',cy-58); svg.appendChild(ch3);
+  const ch4=ch1.cloneNode(); ch4.setAttribute('x1',cx); ch4.setAttribute('x2',cx); ch4.setAttribute('y1',cy+58); ch4.setAttribute('y2',cy+66); svg.appendChild(ch4);
 })();
 
-// LONGEVITY TRAJECTORY — cardio age vs chrono age, 30→70
-(function trajectory(){
-  const svg = document.getElementById('traj-svg');
-  const ns = 'http://www.w3.org/2000/svg';
-  const W = 700, H = 360, padL = 40, padR = 20, padT = 30, padB = 40;
-  const innerW = W - padL - padR, innerH = H - padT - padB;
-
-  // x: age 30..70, y: VO2max 20..55
-  function x(age){ return padL + ((age-30)/40)*innerW; }
-  function y(v){ return padT + (1 - (v-20)/35)*innerH; }
-
-  // Population baseline — declining VO2max with age
-  let pop = '';
-  for (let a = 30; a <= 70; a += 0.5){
-    const v = 45 - (a - 30) * 0.55 - Math.pow(Math.max(0,(a-50)/15),2)*4;
-    pop += (a===30?'M':'L') + x(a) + ',' + y(v);
+/* ============ TRAJECTORY ============ */
+(function traj(){
+  const svg=document.getElementById('traj-svg');
+  if (!svg) return;
+  const ns='http://www.w3.org/2000/svg';
+  const W=720,H=380,padL=44,padR=24,padT=30,padB=44;
+  const iw=W-padL-padR, ih=H-padT-padB;
+  function x(a){return padL+((a-30)/40)*iw}
+  function y(v){return padT+(1-(v-20)/35)*ih}
+  // Grid
+  for (let a=30;a<=70;a+=5){
+    const ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',x(a)); ln.setAttribute('x2',x(a)); ln.setAttribute('y1',padT); ln.setAttribute('y2',H-padB);
+    ln.setAttribute('stroke','rgba(245,239,219,.07)'); ln.setAttribute('stroke-width',a%10===0?'.7':'.4');
+    if (a%10!==0) ln.setAttribute('stroke-dasharray','2 3');
+    svg.appendChild(ln);
   }
-  // Population area
-  let popArea = pop + ` L ${x(70)},${y(20)} L ${x(30)},${y(20)} Z`;
-  const popAreaP = document.createElementNS(ns,'path');
-  popAreaP.setAttribute('d', popArea); popAreaP.setAttribute('fill','rgba(232,221,203,.18)'); svg.appendChild(popAreaP);
-  const popP = document.createElementNS(ns,'path');
-  popP.setAttribute('d', pop); popP.setAttribute('stroke','rgba(232,221,203,.55)'); popP.setAttribute('stroke-width',1.5); popP.setAttribute('fill','none'); popP.setAttribute('stroke-dasharray','4 4');
+  for (let v=20;v<=55;v+=5){
+    const ln=document.createElementNS(ns,'line');
+    ln.setAttribute('x1',padL); ln.setAttribute('x2',W-padR); ln.setAttribute('y1',y(v)); ln.setAttribute('y2',y(v));
+    ln.setAttribute('stroke','rgba(245,239,219,.07)'); ln.setAttribute('stroke-width',v%10===0?'.7':'.4');
+    if (v%10!==0) ln.setAttribute('stroke-dasharray','2 3');
+    svg.appendChild(ln);
+  }
+  // Population mean (dashed)
+  let pop='';
+  for (let a=30;a<=70;a+=0.5){
+    const v = 45 - (a-30)*0.55 - Math.pow(Math.max(0,(a-50)/15),2)*4;
+    pop += (a===30?'M':'L')+x(a)+','+y(v);
+  }
+  const popP=document.createElementNS(ns,'path');
+  popP.setAttribute('d',pop); popP.setAttribute('stroke','#C9C0A6'); popP.setAttribute('stroke-width','1.3'); popP.setAttribute('fill','none'); popP.setAttribute('stroke-dasharray','5 4'); popP.setAttribute('opacity','.7');
   svg.appendChild(popP);
-
-  // User trajectory — 47 today (age 41), projected stays higher
-  let user = '';
-  for (let a = 30; a <= 70; a += 0.5){
-    let v;
-    if (a <= 41){
-      v = 42 + (a - 30) * 0.5 + Math.sin(a*1.2)*0.6; // climbed via training
-    } else {
-      v = 47.5 - (a - 41) * 0.42 - Math.pow(Math.max(0,(a-58)/12),2)*3;
-    }
-    user += (a===30?'M':'L') + x(a) + ',' + y(v);
+  // Population hatch band — fill between population and 1SD below
+  let popLo='', popHi='';
+  for (let a=30;a<=70;a+=0.5){
+    const v = 45 - (a-30)*0.55 - Math.pow(Math.max(0,(a-50)/15),2)*4;
+    popLo += (a===30?'M':'L')+x(a)+','+y(v-3);
+    popHi = `L ${x(a)} ${y(v+3)} ` + popHi;
   }
-  const userP = document.createElementNS(ns,'path');
-  userP.setAttribute('d', user); userP.setAttribute('stroke','#B8704A'); userP.setAttribute('stroke-width',2.4); userP.setAttribute('fill','none'); userP.setAttribute('stroke-linecap','round');
+  const popBand=document.createElementNS(ns,'path');
+  popBand.setAttribute('d',popLo + ' ' + popHi + ' Z'); popBand.setAttribute('fill','rgba(245,239,219,.06)');
+  svg.insertBefore(popBand, popP);
+  // User trajectory
+  let user='';
+  for (let a=30;a<=70;a+=0.5){
+    let v;
+    if (a<=41) v = 42 + (a-30)*0.5 + Math.sin(a*1.2)*0.6;
+    else       v = 47.5 - (a-41)*0.42 - Math.pow(Math.max(0,(a-58)/12),2)*3;
+    user += (a===30?'M':'L')+x(a)+','+y(v);
+  }
+  const glow=document.createElementNS(ns,'path');
+  glow.setAttribute('d',user); glow.setAttribute('stroke','#E48A78'); glow.setAttribute('stroke-width','6'); glow.setAttribute('fill','none'); glow.setAttribute('opacity','.25'); glow.setAttribute('stroke-linecap','round');
+  svg.appendChild(glow);
+  const userP=document.createElementNS(ns,'path');
+  userP.setAttribute('d',user); userP.setAttribute('stroke','#E48A78'); userP.setAttribute('stroke-width','2.2'); userP.setAttribute('fill','none'); userP.setAttribute('stroke-linecap','round');
   svg.appendChild(userP);
-  // Glow under
-  const userGlow = document.createElementNS(ns,'path');
-  userGlow.setAttribute('d', user); userGlow.setAttribute('stroke','#B8704A'); userGlow.setAttribute('stroke-width',6); userGlow.setAttribute('fill','none'); userGlow.setAttribute('opacity',.25); userGlow.setAttribute('stroke-linecap','round');
-  svg.insertBefore(userGlow, userP);
-
-  // "Today" marker at age 41
-  const todayX = x(41), todayY = y(47);
-  const vline = document.createElementNS(ns,'line');
-  vline.setAttribute('x1',todayX); vline.setAttribute('x2',todayX); vline.setAttribute('y1',padT); vline.setAttribute('y2',H-padB);
-  vline.setAttribute('stroke','rgba(232,221,203,.3)'); vline.setAttribute('stroke-dasharray','2 4'); vline.setAttribute('stroke-width',1);
-  svg.appendChild(vline);
-  const dot = document.createElementNS(ns,'circle');
-  dot.setAttribute('cx',todayX); dot.setAttribute('cy',todayY); dot.setAttribute('r',6); dot.setAttribute('fill','#B8704A');
-  dot.setAttribute('stroke','#0E141B'); dot.setAttribute('stroke-width',2);
+  // Today vline
+  const tx=x(41), ty=y(47);
+  const v=document.createElementNS(ns,'line');
+  v.setAttribute('x1',tx); v.setAttribute('x2',tx); v.setAttribute('y1',padT); v.setAttribute('y2',H-padB);
+  v.setAttribute('stroke','rgba(245,239,219,.35)'); v.setAttribute('stroke-dasharray','2 3'); v.setAttribute('stroke-width','.8');
+  svg.appendChild(v);
+  // Crosshair box around today
+  const box=document.createElementNS(ns,'rect');
+  box.setAttribute('x',tx-8); box.setAttribute('y',ty-8); box.setAttribute('width',16); box.setAttribute('height',16);
+  box.setAttribute('fill','none'); box.setAttribute('stroke','#E48A78'); box.setAttribute('stroke-width','.8');
+  svg.appendChild(box);
+  const dot=document.createElementNS(ns,'circle');
+  dot.setAttribute('cx',tx); dot.setAttribute('cy',ty); dot.setAttribute('r','3.5'); dot.setAttribute('fill','#E48A78');
   svg.appendChild(dot);
-  const dotLabel = document.createElementNS(ns,'text');
-  dotLabel.setAttribute('x',todayX+12); dotLabel.setAttribute('y',todayY-8);
-  dotLabel.setAttribute('font-family','Fraunces, serif'); dotLabel.setAttribute('font-size','16'); dotLabel.setAttribute('fill','#E8DDCB'); dotLabel.setAttribute('font-style','italic');
-  dotLabel.textContent = 'today · 47 ml/kg/min';
-  svg.appendChild(dotLabel);
-
-  // Axis
-  [30,40,50,60,70].forEach(a => {
-    const t = document.createElementNS(ns,'text');
-    t.setAttribute('x',x(a)); t.setAttribute('y',H-padB+18); t.setAttribute('text-anchor','middle'); t.setAttribute('class','traj-axis');
-    t.textContent = a; svg.appendChild(t);
+  // Label
+  const lbl=document.createElementNS(ns,'text');
+  lbl.setAttribute('x',tx+18); lbl.setAttribute('y',ty-12);
+  lbl.setAttribute('font-family','Fraunces, serif'); lbl.setAttribute('font-style','italic'); lbl.setAttribute('font-size','16'); lbl.setAttribute('fill','#F5EFDB');
+  lbl.textContent='today · 47 ml/kg/min';
+  svg.appendChild(lbl);
+  const lbl2=document.createElementNS(ns,'text');
+  lbl2.setAttribute('x',tx+18); lbl2.setAttribute('y',ty+4);
+  lbl2.setAttribute('font-family','JetBrains Mono, monospace'); lbl2.setAttribute('font-size','9'); lbl2.setAttribute('letter-spacing','1.5'); lbl2.setAttribute('fill','#E48A78');
+  lbl2.textContent='CARDIO AGE 34 · CHRONO 41';
+  svg.appendChild(lbl2);
+  // Axis ticks
+  [30,40,50,60,70].forEach(a=>{
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',x(a)); t.setAttribute('y',H-padB+18); t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('font-size','9'); t.setAttribute('letter-spacing','1');
+    t.setAttribute('fill','rgba(245,239,219,.55)');
+    t.textContent=a;
+    svg.appendChild(t);
   });
-  [25,35,45,55].forEach(v => {
-    const t = document.createElementNS(ns,'text');
-    t.setAttribute('x', padL-8); t.setAttribute('y', y(v)+3); t.setAttribute('text-anchor','end'); t.setAttribute('class','traj-axis');
-    t.textContent = v; svg.appendChild(t);
+  [25,35,45,55].forEach(v=>{
+    const t=document.createElementNS(ns,'text');
+    t.setAttribute('x',padL-8); t.setAttribute('y',y(v)+3); t.setAttribute('text-anchor','end');
+    t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('font-size','9'); t.setAttribute('letter-spacing','1');
+    t.setAttribute('fill','rgba(245,239,219,.55)');
+    t.textContent=v;
+    svg.appendChild(t);
   });
-  const xLbl = document.createElementNS(ns,'text');
-  xLbl.setAttribute('x', W/2); xLbl.setAttribute('y', H-4); xLbl.setAttribute('text-anchor','middle'); xLbl.setAttribute('class','traj-axis');
-  xLbl.textContent = 'AGE'; svg.appendChild(xLbl);
-  const yLbl = document.createElementNS(ns,'text');
-  yLbl.setAttribute('x', 8); yLbl.setAttribute('y', 14); yLbl.setAttribute('class','traj-axis');
-  yLbl.textContent = 'VO₂ MAX (ml/kg/min)'; svg.appendChild(yLbl);
+  const xL=document.createElementNS(ns,'text');
+  xL.setAttribute('x',W/2); xL.setAttribute('y',H-6); xL.setAttribute('text-anchor','middle');
+  xL.setAttribute('font-family','JetBrains Mono, monospace'); xL.setAttribute('font-size','9'); xL.setAttribute('letter-spacing','1.5');
+  xL.setAttribute('fill','rgba(245,239,219,.55)');
+  xL.textContent='AGE · YEARS';
+  svg.appendChild(xL);
+  const yL=document.createElementNS(ns,'text');
+  yL.setAttribute('x',8); yL.setAttribute('y',14);
+  yL.setAttribute('font-family','JetBrains Mono, monospace'); yL.setAttribute('font-size','9'); yL.setAttribute('letter-spacing','1.5');
+  yL.setAttribute('fill','rgba(245,239,219,.55)');
+  yL.textContent='VO₂ MAX · ML / KG / MIN';
+  svg.appendChild(yL);
 })();
 
-// Chapter in-view
-const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('in-view', e.isIntersecting)), { threshold: 0.4 });
-document.querySelectorAll('.chapter').forEach(c => io.observe(c));
+/* ============ NAME REVEAL ============ */
+const nm=document.getElementById('nm');
+const inp=document.getElementById('nameInput');
+if (inp) inp.addEventListener('input',e=>{ nm.textContent = e.target.value.trim() || 'you'; });
 
-// Name reveal
-const nm = document.getElementById('nm');
-document.getElementById('nameInput').addEventListener('input', e => {
-  nm.textContent = e.target.value.trim() || 'you';
-});
+/* ============ IN-VIEW class for animations ============ */
+const io=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('in-view',e.isIntersecting)),{threshold:0.35});
+document.querySelectorAll('.chapter').forEach(c=>io.observe(c));
+
+/* ============ MOUSE PARALLAX on hero ring drawing ============ */
+(function ringParallax(){
+  const svg=document.getElementById('ring-svg');
+  if (!svg) return;
+  let tx=0, ty=0, cx=0, cy=0;
+  window.addEventListener('mousemove',e=>{
+    tx = (e.clientX/window.innerWidth - 0.5);
+    ty = (e.clientY/window.innerHeight - 0.5);
+  });
+  function tick(){
+    cx += (tx-cx)*0.06; cy += (ty-cy)*0.06;
+    svg.style.transform = `perspective(1200px) rotateY(${cx*6}deg) rotateX(${-cy*4}deg)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
 </script>
 
 </body>
