@@ -440,8 +440,13 @@ const engrave = new THREE.Mesh(
 engrave.rotation.x = Math.PI/2;
 ringGroup.add(engrave);
 
-ringGroup.rotation.x = 0.45;
+// Orient as "O" — band axis pointing toward camera so the ring face faces us
+ringGroup.rotation.x = Math.PI / 2;
 scene.add(ringGroup);
+// Outer wrapper so we can spin around world Y without losing the O orientation
+const spinner = new THREE.Group();
+spinner.add(ringGroup);
+scene.add(spinner);
 
 // Sizing
 function resize(){
@@ -462,11 +467,12 @@ window.addEventListener('mousemove', e => {
 
 let t = 0;
 function tick(){
-  t += 0.005;
+  t += 0.006;
   mouseX += (tgtX - mouseX) * 0.06;
   mouseY += (tgtY - mouseY) * 0.06;
-  ringGroup.rotation.y = t + mouseX;
-  ringGroup.rotation.x = 0.45 + Math.sin(t*0.7)*0.06 - mouseY*0.5;
+  // Spin like an "O" — rotate around world Y so the ring face goes O → ellipse → O
+  spinner.rotation.y = t + mouseX * 0.5;
+  spinner.rotation.x = -mouseY * 0.3;
   // LED pulse
   const p = (Math.sin(t*4) + 1) / 2;
   led.material.emissiveIntensity = 1.0 + p * 1.8;
